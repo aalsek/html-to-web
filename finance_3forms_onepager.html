@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Три формы отчётности — one pager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple:#7B2FF7;
+    --purple-dark:#5B1FB8;
+    --green:#A6E22E;
+    --green-dark:#5C8A00;
+    --orange:#F0622E;
+    --ink:#242428;
+    --gray:#6B6B72;
+    --gray-line:#E4E4E8;
+    --paper:#FFFFFF;
+    --paper-soft:#F7F6FB;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:#EDEBF3;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    padding:28px 16px 60px;
+  }
+  h1,h2,h3,h4{font-family:'Unbounded',sans-serif;}
+
+  .page{width:1160px;max-width:100%;background:var(--paper);box-shadow:0 12px 40px rgba(20,10,40,.14);border-radius:4px;padding:44px 52px 40px;}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:2px solid var(--ink);margin-bottom:22px;}
+  .brand{font-size:13px;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:10px;}
+  .brand .tag{background:var(--purple);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.5px;}
+  .doc-meta{font-size:11.5px;color:var(--gray);font-weight:600;text-align:right;}
+
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:1.6px;color:var(--purple);text-transform:uppercase;margin-bottom:10px;}
+  .hero h1{font-size:38px;line-height:1.08;font-weight:700;letter-spacing:-.3px;margin-bottom:28px;}
+  .hero h1 .hl{color:var(--purple);}
+
+  .goals{margin-bottom:26px;}
+  .goals-label{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--gray);margin-bottom:10px;}
+  .goals-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  .goal-item{background:var(--paper-soft);border-radius:6px;padding:14px 16px;display:flex;align-items:center;gap:12px;}
+  .goal-num{display:inline-flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-weight:700;font-size:13px;background:var(--purple);color:#fff;width:28px;height:28px;border-radius:50%;flex-shrink:0;}
+  .goal-item:nth-child(2) .goal-num{background:var(--green-dark);}
+  .goal-txt{font-size:13.5px;font-weight:600;line-height:1.35;}
+
+  .section{padding-top:22px;margin-top:22px;border-top:3px solid var(--ink);}
+  .section:first-of-type{border-top:none;padding-top:0;margin-top:0;}
+  .section-hd{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;}
+  .section-hd .snum{font-family:'Unbounded',sans-serif;font-weight:900;font-size:15px;color:var(--purple);background:var(--paper-soft);padding:4px 9px;border-radius:5px;}
+  .section-hd h2{font-size:22px;font-weight:700;}
+
+  /* three cards for BS/PL/CF */
+  .cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--gray-line);border-radius:6px;overflow:hidden;margin-bottom:16px;}
+  .card{padding:18px 20px;border-right:1px solid var(--gray-line);border-top:4px solid var(--gray-line);}
+  .card:last-child{border-right:none;}
+  .card.c-purple{border-top-color:var(--purple);}
+  .card.c-green{border-top-color:var(--green-dark);}
+  .card.c-dark{border-top-color:var(--ink);}
+  .card .tag{font-size:10px;font-weight:800;letter-spacing:.6px;color:var(--gray);text-transform:uppercase;margin-bottom:5px;}
+  .card h3{font-size:19px;font-weight:700;margin-bottom:3px;}
+  .card .sub{font-size:12px;font-style:italic;color:var(--gray);}
+
+  /* structure tables */
+  .tbl-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:16px;align-items:start;position:relative;}
+  .tbl-stack{display:flex;flex-direction:column;gap:20px;}
+  #connectorSvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:visible;}
+  #connectorSvg path{fill:none;stroke:var(--purple);stroke-width:2.25;}
+  #connectorSvg circle{fill:var(--purple);}
+
+  .metrics-card{display:flex;flex-direction:column;gap:12px;}
+  .metric-tile{border:1px solid var(--gray-line);border-radius:6px;padding:12px 14px;cursor:pointer;transition:border-color .15s,box-shadow .15s,background .15s;background:#fff;position:relative;z-index:6;}
+  .metric-tile:hover{border-color:var(--purple);box-shadow:0 4px 14px rgba(20,10,40,.10);}
+  .metric-tile.active{border-color:var(--purple);background:#F4EEFF;}
+  .metric-name{font-size:14px;font-weight:700;margin-bottom:3px;}
+  .metric-formula{font-size:11.5px;color:var(--gray);}
+  .row-highlight td{background:#F4EEFF !important;box-shadow:inset 0 0 0 1.5px var(--purple);}
+  .tbl-card{border:1px solid var(--gray-line);border-radius:6px;padding:16px 18px;}
+  .tbl-card.clickable{cursor:pointer;transition:box-shadow .15s,border-color .15s;}
+  .tbl-card.clickable:hover{box-shadow:0 6px 20px rgba(20,10,40,.12);border-color:var(--purple);}
+  .tbl-card.clickable .tbl-hd::after{content:'⤢';margin-left:auto;font-size:14px;color:var(--gray);}
+
+  /* modal */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,10,40,.6);z-index:1000;align-items:center;justify-content:center;padding:40px;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:#fff;border-radius:10px;max-width:760px;width:100%;max-height:92vh;overflow-y:auto;padding:40px 44px;position:relative;box-shadow:0 24px 70px rgba(0,0,0,.35);}
+  .modal-close{position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--gray-line);background:#fff;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;color:var(--ink);}
+  .modal-close:hover{border-color:var(--purple);color:var(--purple);}
+  .modal-box .tbl-hd{margin-bottom:18px;}
+  .modal-box .badge{font-size:14px;padding:6px 12px;}
+  .modal-box h3{font-size:30px;}
+  .modal-box table.fin-tbl{font-size:17px;}
+  .modal-box table.fin-tbl td{padding:12px 4px;}
+  .tbl-hd{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .tbl-hd .badge{font-family:'Unbounded',sans-serif;font-weight:700;font-size:11px;background:var(--purple);color:#fff;padding:4px 8px;border-radius:5px;}
+  .tbl-card.green .badge, .modal-box.green .badge{background:var(--green-dark);}
+  .tbl-card.dark .badge, .modal-box.dark .badge{background:var(--ink);}
+  .tbl-hd h3{font-size:16px;font-weight:700;}
+  .tbl-hd .sub{font-size:11px;font-style:italic;color:var(--gray);}
+  .fin-tbl{width:100%;border-collapse:collapse;font-size:13px;}
+  .fin-tbl tr{border-bottom:1px solid var(--gray-line);}
+  .fin-tbl td{padding:7px 2px;font-weight:600;}
+  .fin-tbl tr.total{background:var(--paper-soft);}
+  .fin-tbl tr.total td{font-weight:700;}
+  .fin-tbl tr.hd td{font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--gray);background:none;padding-top:12px;border-bottom:1px solid var(--gray-line);}
+  .fin-tbl tr.spacer{border-bottom:none;}
+  .fin-tbl tr.spacer td{padding:5px 0;}
+
+  /* principles */
+  .prin2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+  .prin{background:var(--paper-soft);border-radius:6px;padding:16px 18px;border-left:4px solid var(--purple);display:flex;align-items:center;gap:14px;cursor:pointer;transition:box-shadow .15s,background .15s;}
+  .prin:hover{box-shadow:0 6px 20px rgba(20,10,40,.12);background:#F1EEFA;}
+  .prin::after{content:'⤢';margin-left:auto;font-size:14px;color:var(--gray);flex-shrink:0;}
+  .prin:nth-child(2){border-left-color:var(--green-dark);}
+  .prin .pnum{display:inline-flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-weight:700;font-size:12px;background:var(--purple);color:#fff;width:30px;height:30px;border-radius:6px;flex-shrink:0;}
+  .prin:nth-child(2) .pnum{background:var(--green-dark);}
+  .prin h4{font-size:16px;font-weight:700;}
+
+  /* principle modal content */
+  .modal-box p.expl{font-size:15px;line-height:1.6;color:var(--gray);margin-bottom:18px;}
+  .example-box{background:var(--paper-soft);border-left:4px solid var(--purple);border-radius:6px;padding:14px 18px;font-size:14px;line-height:1.5;color:var(--ink);font-weight:600;}
+  .modal-box.green .example-box{border-left-color:var(--green-dark);}
+  .example-box .ex-lbl{display:block;font-family:'Unbounded',sans-serif;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;}
+
+  /* case ledger */
+  .reset-link{font-size:12px;font-weight:700;color:var(--gray);cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-bottom:14px;}
+  .reset-link:hover{color:var(--purple);}
+
+  .ledger-wrap{position:relative;margin-bottom:6px;}
+  #ledgerSvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:visible;}
+  #ledgerSvg path{fill:none;stroke-width:2;}
+  #ledgerSvg path.ln-dt, #ledgerSvg circle.ln-dt{stroke:#D0342C;fill:#D0342C;}
+  #ledgerSvg path.ln-kt, #ledgerSvg circle.ln-kt{stroke:var(--green-dark);fill:var(--green-dark);}
+
+  .ledger{border-collapse:collapse;width:100%;table-layout:fixed;font-size:11px;}
+  .ledger td,.ledger th{padding:5px 6px;text-align:right;border-bottom:1px solid var(--gray-line);}
+  .ledger td:first-child,.ledger th:first-child{text-align:left;}
+  .ledger thead th{vertical-align:bottom;padding-bottom:8px;border-bottom:2px solid var(--ink);}
+  .ledger .period-hd{font-family:'Unbounded',sans-serif;font-weight:700;font-size:11px;color:var(--ink);text-align:center !important;}
+  .ledger .row-label{font-weight:600;position:relative;white-space:normal;line-height:1.25;}
+  .ledger tr.grp-hd td{background:var(--ink);color:#fff;font-family:'Unbounded',sans-serif;font-weight:700;font-size:10px;letter-spacing:.6px;text-transform:uppercase;padding:6px 6px;border-bottom:none;}
+  .ledger tr.grp-hd.purple td{background:var(--purple);}
+  .ledger tr.grp-hd.green td{background:var(--green-dark);}
+  .ledger tr.tot td{font-weight:800;}
+  .ledger td.period-col{background:var(--paper-soft);font-variant-numeric:tabular-nums;position:relative;}
+  .ledger tr.tot td.period-col{background:#EDE4FB;}
+  .ledger td.gap-col{background:transparent;padding:5px 4px;vertical-align:top;}
+
+  .op-chip{display:block;width:100%;box-sizing:border-box;text-align:center;background:var(--paper-soft);border:1px solid var(--gray-line);border-radius:6px;padding:6px 2px;font-size:8.7px;letter-spacing:-.1px;font-weight:700;line-height:1.3;cursor:not-allowed;margin-bottom:5px;transition:all .15s;color:var(--gray);opacity:.5;word-break:break-word;}
+  .op-chip:last-child{margin-bottom:0;}
+  .op-chip.next{cursor:pointer;background:var(--purple);border-color:var(--purple);color:#fff;opacity:1;box-shadow:0 4px 14px rgba(123,47,247,.3);}
+  .op-chip.next:hover{background:var(--purple-dark);}
+  .op-chip.done{cursor:default;background:#F1EEFA;border-color:#D9CCF5;color:var(--green-dark);opacity:1;}
+  .op-chip.done::after{content:' ✓';}
+  .op-chip.done.undoable{cursor:pointer;}
+  .op-chip.done.undoable:hover{background:#FDECEA;border-color:#D0342C;color:#D0342C;}
+  .op-chip.done.undoable:hover::after{content:' ↺';}
+
+  .val-cell .delta{display:block;color:#D0342C;font-weight:800;font-size:9px;opacity:0;transition:opacity .2s;height:11px;}
+  .val-cell .delta.show{opacity:1;}
+  .val-cell .num{transition:background .3s;border-radius:3px;}
+  .val-cell .num.flash{background:#FDECEA;}
+  .val-cell.pending .num{color:#C7C4D6;}
+
+  .post-entry{font-size:8.7px;font-weight:800;line-height:1.5;text-align:center;white-space:nowrap;}
+  .post-entry.dt{color:#D0342C;}
+  .post-entry.kt{color:var(--green-dark);}
+
+  .balance-check{font-size:11px;color:var(--green-dark);font-weight:700;margin:10px 0 0;}
+
+  /* whiteboard / stickers */
+  .board-toolbar{display:flex;align-items:center;gap:18px;margin-bottom:14px;}
+  .board-toolbar .reset-link{margin-bottom:0;}
+  .sticker-btn{font-family:'Unbounded',sans-serif;font-weight:700;font-size:13px;color:#fff;background:var(--purple);border:none;border-radius:8px;padding:11px 20px;cursor:pointer;transition:background .15s,box-shadow .15s;box-shadow:0 4px 14px rgba(123,47,247,.3);}
+  .sticker-btn:hover{background:var(--purple-dark);}
+  .sticker-btn:disabled{background:var(--gray-line);color:var(--gray);cursor:not-allowed;box-shadow:none;}
+
+  .whiteboard{position:relative;width:100%;height:380px;background-color:#fff;
+    background-image:linear-gradient(rgba(20,10,40,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(20,10,40,.05) 1px, transparent 1px);
+    background-size:26px 26px;
+    border:1px solid var(--gray-line);border-radius:10px;overflow:hidden;}
+
+  .sticker{position:absolute;box-sizing:border-box;border-radius:8px;box-shadow:0 10px 28px rgba(20,10,40,.22);padding:18px 20px;opacity:0;pointer-events:none;
+    transition:left .5s cubic-bezier(.22,.9,.32,1), top .5s cubic-bezier(.22,.9,.32,1), width .5s cubic-bezier(.22,.9,.32,1), height .5s cubic-bezier(.22,.9,.32,1), opacity .35s, transform .5s cubic-bezier(.22,.9,.32,1);
+    display:flex;flex-direction:column;justify-content:center;gap:8px;overflow:hidden;}
+  .sticker.show{opacity:1;}
+  .sticker.c-purple{background:var(--purple);color:#fff;}
+  .sticker.c-green{background:var(--green);color:var(--ink);}
+  .sticker.c-dark{background:var(--ink);color:#fff;}
+  .sticker.c-orange{background:var(--orange);color:#fff;}
+
+  .sticker .s-title{font-family:'Unbounded',sans-serif;font-weight:700;line-height:1.25;transition:font-size .5s cubic-bezier(.22,.9,.32,1);}
+  .sticker.big .s-title{font-size:22px;}
+  .sticker.placed .s-title{font-size:12.5px;}
+
+  .sticker .s-sub{font-size:13px;line-height:1.4;opacity:.88;font-weight:600;}
+  .sticker.placed .s-sub{display:none;}
+
+  .sticker .s-tags{display:flex;flex-wrap:wrap;gap:6px;}
+  .sticker .s-tags span{background:rgba(255,255,255,.28);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;}
+  .sticker.c-green .s-tags span{background:rgba(36,36,40,.12);}
+  .sticker.placed .s-tags{display:none;}
+
+  /* project: капитализация — определение */
+  .cap-def{background:var(--purple);color:#fff;border-radius:8px;padding:22px 26px;margin-bottom:18px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;}
+  .cap-def-title{font-family:'Unbounded',sans-serif;font-weight:700;font-size:22px;}
+  .cap-def-sub{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;opacity:1;}
+  .cap-cond-hd{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--gray);margin-bottom:10px;}
+  .cap-year-note{font-size:11px;font-style:italic;color:var(--gray);font-weight:600;}
+
+  .cap-methods-note{background:var(--paper-soft);border-radius:6px;padding:14px 16px;margin-bottom:14px;}
+  .cap-methods-label{display:block;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:10px;}
+  .cap-methods-list{display:flex;flex-wrap:wrap;gap:8px;}
+  .cap-method-chip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--gray-line);border-radius:20px;padding:6px 13px;font-size:11.5px;font-weight:700;color:var(--gray);}
+  .cap-method-chip.active{background:var(--purple);border-color:var(--purple);color:#fff;}
+  .cap-method-tag{font-weight:400;font-style:italic;opacity:.85;font-size:10px;}
+  .cap-conditions{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .cap-cond{background:var(--paper-soft);border-radius:6px;padding:14px 16px;display:flex;align-items:center;gap:12px;}
+  .cap-cond-num{display:inline-flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-weight:700;font-size:13px;background:var(--purple);color:#fff;width:28px;height:28px;border-radius:50%;flex-shrink:0;}
+  .cap-cond:nth-child(2) .cap-cond-num{background:var(--green-dark);}
+  .cap-cond:nth-child(3) .cap-cond-num{background:var(--orange);}
+  .cap-cond-txt{font-size:13.5px;font-weight:600;line-height:1.35;}
+
+  /* project: капитализация — дерево оценки бизнеса */
+  .cap-tree{overflow-x:auto;padding:10px 0 4px;}
+  .tree-root{display:table;margin:0 auto;text-align:center;}
+  .tree-children{display:table;width:100%;position:relative;margin-top:20px;}
+  .tree-children::before{content:'';position:absolute;left:50%;top:-20px;height:20px;width:0;border-left:2px solid var(--gray-line);}
+  .tree-child{display:table-cell;vertical-align:top;padding:0 14px;position:relative;}
+  .tree-child::before{content:'';position:absolute;left:0;right:0;top:0;height:0;border-top:2px solid var(--gray-line);}
+  .tree-child:first-child::before{left:50%;}
+  .tree-child:last-child::before{right:50%;}
+  .tree-child:only-child::before{display:none;}
+  .tree-child-inner{position:relative;padding-top:20px;display:flex;flex-direction:column;align-items:center;}
+  .tree-child-inner::before{content:'';position:absolute;left:50%;top:0;height:20px;width:0;border-left:2px solid var(--gray-line);}
+
+  .cap-node{position:relative;background:var(--paper-soft);border:1.5px solid var(--gray-line);border-radius:8px;padding:12px 18px;text-align:center;min-width:150px;}
+  .cap-node.root{background:var(--purple);border-color:var(--purple);color:#fff;min-width:190px;}
+  .cap-node.branch{border-color:#D9CCF5;}
+  .cap-node.branch.small{min-width:120px;padding:10px 12px;}
+  .cap-node.leaf{background:#fff;color:var(--gray);}
+  .cap-node.leaf .cap-node-label{color:var(--ink);font-family:'Inter',sans-serif;font-weight:600;font-size:12.5px;}
+  .cap-node-top{display:flex;align-items:center;justify-content:center;gap:8px;}
+  .cap-node-label{font-family:'Unbounded',sans-serif;font-weight:700;font-size:12.5px;line-height:1.3;}
+  .cap-node-value{font-family:'Unbounded',sans-serif;font-weight:700;font-size:20px;margin-top:6px;}
+  .cap-node.leaf .cap-node-value{font-size:16px;}
+  .cap-node-value.pos{color:var(--green-dark);}
+  .cap-node-value.neg{color:#D0342C;}
+  .cap-node.root .cap-node-value{color:#fff;}
+  .cap-node-sub{font-size:10.5px;font-weight:600;color:var(--gray);margin-top:3px;}
+  .cap-node.root .cap-node-sub{color:rgba(255,255,255,.75);}
+  .cap-formula{display:none;font-size:10.5px;color:var(--gray);margin-top:7px;font-weight:600;font-style:italic;}
+  .cap-node.root .cap-formula{color:rgba(255,255,255,.8);}
+  .cap-node.expanded .cap-formula{display:block;}
+
+  .cap-node.def-clickable{cursor:pointer;transition:box-shadow .15s,border-color .15s;}
+  .cap-node.def-clickable:hover{box-shadow:0 6px 20px rgba(20,10,40,.12);border-color:var(--purple);}
+  .cap-info-ic{font-size:10px;font-weight:400;color:var(--purple);vertical-align:2px;}
+
+  .cap-toggle{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--purple);background:#fff;color:var(--purple);font-family:'Unbounded',sans-serif;font-weight:700;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,color .15s;}
+  .cap-toggle:hover{background:var(--purple);color:#fff;}
+  .cap-node.root .cap-toggle{border-color:#fff;background:transparent;color:#fff;}
+  .cap-node.root .cap-toggle:hover{background:#fff;color:var(--purple);}
+
+  .cap-list{display:none;margin-top:12px;background:#fff;border:1px solid var(--gray-line);border-radius:6px;padding:6px 12px;min-width:230px;max-width:280px;text-align:left;}
+  .cap-list-row{display:flex;justify-content:space-between;gap:12px;font-size:11.5px;font-weight:600;padding:6px 0;border-bottom:1px solid var(--gray-line);}
+  .cap-list-row:last-child{border-bottom:none;}
+  .cap-list-row .pos{color:var(--green-dark);}
+  .cap-list-row .neg{color:#D0342C;}
+
+  .foot{margin-top:24px;padding-top:14px;border-top:1px solid var(--gray-line);font-size:11px;color:var(--gray);}
+
+  @media (max-width:900px){
+    .cards3,.tbl-cols,.prin2{grid-template-columns:1fr;}
+    .card{border-right:none;border-bottom:1px solid var(--gray-line);}
+  }
+  @media print{
+    body{background:#fff;padding:0;}
+    .page{box-shadow:none;width:auto;padding:18px 26px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="hero">
+    <h1>Три формы <span class="hl">отчётности</span></h1>
+  </div>
+
+  <!-- цели -->
+  <div class="goals">
+    <div class="goals-label">Цели</div>
+    <div class="goals-list">
+      <div class="goal-item"><span class="goal-num">1</span><span class="goal-txt">Обсудить необходимость 1С через погружение в требования и процессы</span></div>
+      <div class="goal-item"><span class="goal-num">2</span><span class="goal-txt">Поговорить про капитализацию</span></div>
+    </div>
+  </div>
+
+  <!-- SECTION: три формы -->
+  <div class="section">
+    <div class="section-hd"><span class="snum">1.1</span><h2>Три взгляда на бизнес</h2></div>
+    <div class="cards3">
+      <div class="card c-purple">
+        <div class="tag">BS · Balance Sheet</div>
+        <h3>Баланс</h3>
+      </div>
+      <div class="card c-green">
+        <div class="tag">P&amp;L · Profit &amp; Loss</div>
+        <h3>Отчёт о прибыли</h3>
+      </div>
+      <div class="card c-dark">
+        <div class="tag">CF · Cash Flow</div>
+        <h3>Движение денег</h3>
+        <div class="sub">движение денег за период</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: шаблоны отчётности -->
+  <div class="section">
+    <div class="section-hd"><span class="snum">1.2</span><h2>Шаблоны отчётности</h2></div>
+    <div class="tbl-cols">
+      <div class="tbl-stack">
+        <div class="tbl-card clickable" onclick="openModal('balanceModal')">
+          <div class="tbl-hd"><span class="badge">BS</span><div><h3>Баланс</h3></div></div>
+          <table class="fin-tbl">
+            <tr class="total"><td>Активы</td></tr>
+            <tr class="spacer"><td></td></tr>
+            <tr><td>Денежные средства</td></tr>
+            <tr><td>Дебиторская задолженность</td></tr>
+            <tr><td>Запасы</td></tr>
+            <tr><td>Инвестиции</td></tr>
+            <tr><td>Основные средства</td></tr>
+            <tr><td>Нематериальные активы</td></tr>
+            <tr><td>Прочие</td></tr>
+            <tr class="total" id="row-total-assets"><td>Итого активы</td></tr>
+            <tr class="spacer"><td></td></tr>
+            <tr class="total"><td>Пассивы</td></tr>
+            <tr class="spacer"><td></td></tr>
+            <tr id="row-equity"><td>Акционерный капитал</td></tr>
+            <tr id="row-retained"><td>Накопленная прибыль</td></tr>
+            <tr><td>Долгосрочные обязательства</td></tr>
+            <tr><td>Краткосрочные обязательства</td></tr>
+            <tr class="total"><td>Итого пассивы</td></tr>
+          </table>
+        </div>
+        <div class="tbl-card green clickable" onclick="openModal('plModal')">
+          <div class="tbl-hd"><span class="badge">P&amp;L</span><div><h3>Отчёт о прибыли</h3></div></div>
+          <table class="fin-tbl">
+            <tr id="row-revenue"><td>Выручка</td></tr>
+            <tr><td>Расходы на персонал</td></tr>
+            <tr><td>Расходы на маркетинг</td></tr>
+            <tr><td>Расходы на ПО</td></tr>
+            <tr><td>Административные расходы</td></tr>
+            <tr><td>Амортизация</td></tr>
+            <tr><td>Прочие расходы</td></tr>
+            <tr class="total"><td>Прибыль до налога на прибыль</td></tr>
+            <tr class="spacer"><td></td></tr>
+            <tr><td>Налог на прибыль</td></tr>
+            <tr class="total" id="row-net-profit"><td>Чистая прибыль</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="tbl-stack">
+      <div class="tbl-card dark clickable" onclick="openModal('cfModal')">
+        <div class="tbl-hd"><span class="badge">CF</span><div><h3>ДДС</h3><span class="sub">прямой метод</span></div></div>
+        <table class="fin-tbl">
+          <tr class="total"><td>Операционная деятельность</td></tr>
+          <tr class="spacer"><td></td></tr>
+          <tr><td>Поступления от покупателей</td></tr>
+          <tr><td>Оплата поставщикам</td></tr>
+          <tr><td>Оплата труда персонала</td></tr>
+          <tr><td>Уплаченные налоги</td></tr>
+          <tr><td>Прочие операционные платежи</td></tr>
+          <tr class="total"><td>Итого от операционной деятельности</td></tr>
+          <tr class="spacer"><td></td></tr>
+          <tr class="total"><td>Инвестиционная деятельность</td></tr>
+          <tr class="spacer"><td></td></tr>
+          <tr><td>Приобретение основных средств</td></tr>
+          <tr><td>Продажа активов</td></tr>
+          <tr class="total"><td>Итого от инвестиционной деятельности</td></tr>
+          <tr class="spacer"><td></td></tr>
+          <tr class="total"><td>Финансовая деятельность</td></tr>
+          <tr class="spacer"><td></td></tr>
+          <tr><td>Привлечение долга</td></tr>
+          <tr><td>Погашение долга</td></tr>
+          <tr><td>Взносы / выплаты акционерам</td></tr>
+          <tr class="total"><td>Итого от финансовой деятельности</td></tr>
+          <tr class="spacer"><td></td></tr>
+          <tr class="total"><td>Итого изменение денежных средств</td></tr>
+          <tr class="spacer"><td></td></tr>
+          <tr><td>Остаток на начало периода</td></tr>
+          <tr class="total"><td>Остаток на конец периода</td></tr>
+        </table>
+      </div>
+      <div class="tbl-card metrics-card">
+        <div class="tbl-hd"><span class="badge" style="background:var(--ink);">KPI</span><div><h3>Метрики</h3></div></div>
+        <div class="metric-tile" id="metricMargin" onclick="toggleMetric('margin')">
+          <div class="metric-name">Маржинальность</div>
+          <div class="metric-formula">Чистая прибыль ÷ Выручка</div>
+        </div>
+        <div class="metric-tile" id="metricROI" onclick="toggleMetric('roi')">
+          <div class="metric-name">Возврат на инвестиции</div>
+          <div class="metric-formula">Чистая прибыль ÷ Собственный капитал</div>
+        </div>
+      </div>
+      </div>
+      <svg id="connectorSvg"></svg>
+    </div>
+  </div>
+
+  <!-- SECTION: принципы -->
+  <div class="section">
+    <div class="section-hd"><span class="snum">1.3</span><h2>Два принципа</h2></div>
+    <div class="prin2">
+      <div class="prin" onclick="openModal('doubleEntryModal')"><div class="pnum">01</div><h4>Двойная запись</h4></div>
+      <div class="prin" onclick="openModal('accrualModal')"><div class="pnum">02</div><h4>Принцип начисления</h4></div>
+    </div>
+  </div>
+
+  <!-- SECTION: пример формирования -->
+  <div class="section">
+    <div class="section-hd"><span class="snum">1.4</span><h2>Пример формирования</h2></div>
+    <div class="reset-link" onclick="resetLedger()">↺ Сбросить</div>
+    <div class="ledger-wrap" id="ledgerWrap">
+      <svg id="ledgerSvg"></svg>
+      <table class="ledger">
+        <colgroup>
+          <col style="width:180px">
+          <col style="width:96px">
+          <col style="width:92px">
+          <col style="width:96px">
+          <col style="width:92px">
+          <col style="width:96px">
+          <col style="width:92px">
+          <col style="width:96px">
+          <col style="width:92px">
+          <col style="width:96px">
+        </colgroup>
+        <thead>
+        <tr>
+          <th></th>
+          <th class="period-hd">Период 0</th>
+          <th class="gap-col"><div class="op-chip" data-op="0" onclick="clickOp(0)">Инвестиции<br>$150&nbsp;000</div></th>
+          <th class="period-hd">Период 1</th>
+          <th class="gap-col"><div class="op-chip" data-op="1" onclick="clickOp(1)">Оборудование<br>$15&nbsp;000</div></th>
+          <th class="period-hd">Период 2</th>
+          <th class="gap-col"><div class="op-chip" data-op="2" onclick="clickOp(2)">Начисление зарплаты<br>$15&nbsp;000</div><div class="op-chip" data-op="3" onclick="clickOp(3)">Выплата зарплаты<br>$15&nbsp;000</div></th>
+          <th class="period-hd">Период 3</th>
+          <th class="gap-col"><div class="op-chip" data-op="4" onclick="clickOp(4)">Выручка<br>$5&nbsp;000</div><div class="op-chip" data-op="5" onclick="clickOp(5)">Получение выручки<br>$4&nbsp;000</div></th>
+          <th class="period-hd">Период 4</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="grp-hd purple"><td colspan="10">Баланс</td></tr>
+        <tr>
+          <td class="row-label">Денежные средства</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-cash"></td>
+          <td class="period-col val-cell pending" id="cell-p1-cash"><span class="delta" id="d-p1-cash"></span><span class="num" id="v-p1-cash">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-cash"></td>
+          <td class="period-col val-cell pending" id="cell-p2-cash"><span class="delta" id="d-p2-cash"></span><span class="num" id="v-p2-cash">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-cash"></td>
+          <td class="period-col val-cell pending" id="cell-p3-cash"><span class="delta" id="d-p3-cash"></span><span class="num" id="v-p3-cash">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-cash"></td>
+          <td class="period-col val-cell pending" id="cell-p4-cash"><span class="delta" id="d-p4-cash"></span><span class="num" id="v-p4-cash">—</span></td>
+        </tr>
+        <tr>
+          <td class="row-label">Дебиторская задолженность</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-ar"></td>
+          <td class="period-col val-cell pending" id="cell-p1-ar"><span class="delta" id="d-p1-ar"></span><span class="num" id="v-p1-ar">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-ar"></td>
+          <td class="period-col val-cell pending" id="cell-p2-ar"><span class="delta" id="d-p2-ar"></span><span class="num" id="v-p2-ar">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-ar"></td>
+          <td class="period-col val-cell pending" id="cell-p3-ar"><span class="delta" id="d-p3-ar"></span><span class="num" id="v-p3-ar">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-ar"></td>
+          <td class="period-col val-cell pending" id="cell-p4-ar"><span class="delta" id="d-p4-ar"></span><span class="num" id="v-p4-ar">—</span></td>
+        </tr>
+        <tr>
+          <td class="row-label">Основные средства</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-equip"></td>
+          <td class="period-col val-cell pending" id="cell-p1-equip"><span class="delta" id="d-p1-equip"></span><span class="num" id="v-p1-equip">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-equip"></td>
+          <td class="period-col val-cell pending" id="cell-p2-equip"><span class="delta" id="d-p2-equip"></span><span class="num" id="v-p2-equip">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-equip"></td>
+          <td class="period-col val-cell pending" id="cell-p3-equip"><span class="delta" id="d-p3-equip"></span><span class="num" id="v-p3-equip">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-equip"></td>
+          <td class="period-col val-cell pending" id="cell-p4-equip"><span class="delta" id="d-p4-equip"></span><span class="num" id="v-p4-equip">—</span></td>
+        </tr>
+        <tr class="tot">
+          <td class="row-label">Итого активы</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-assets"></td>
+          <td class="period-col val-cell pending" id="cell-p1-assets"><span class="delta" id="d-p1-assets"></span><span class="num" id="v-p1-assets">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-assets"></td>
+          <td class="period-col val-cell pending" id="cell-p2-assets"><span class="delta" id="d-p2-assets"></span><span class="num" id="v-p2-assets">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-assets"></td>
+          <td class="period-col val-cell pending" id="cell-p3-assets"><span class="delta" id="d-p3-assets"></span><span class="num" id="v-p3-assets">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-assets"></td>
+          <td class="period-col val-cell pending" id="cell-p4-assets"><span class="delta" id="d-p4-assets"></span><span class="num" id="v-p4-assets">—</span></td>
+        </tr>
+        <tr>
+          <td class="row-label">Кредиторская задолженность</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-ap"></td>
+          <td class="period-col val-cell pending" id="cell-p1-ap"><span class="delta" id="d-p1-ap"></span><span class="num" id="v-p1-ap">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-ap"></td>
+          <td class="period-col val-cell pending" id="cell-p2-ap"><span class="delta" id="d-p2-ap"></span><span class="num" id="v-p2-ap">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-ap"></td>
+          <td class="period-col val-cell pending" id="cell-p3-ap"><span class="delta" id="d-p3-ap"></span><span class="num" id="v-p3-ap">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-ap"></td>
+          <td class="period-col val-cell pending" id="cell-p4-ap"><span class="delta" id="d-p4-ap"></span><span class="num" id="v-p4-ap">—</span></td>
+        </tr>
+        <tr>
+          <td class="row-label">Акционерный капитал</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-equity"></td>
+          <td class="period-col val-cell pending" id="cell-p1-equity"><span class="delta" id="d-p1-equity"></span><span class="num" id="v-p1-equity">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-equity"></td>
+          <td class="period-col val-cell pending" id="cell-p2-equity"><span class="delta" id="d-p2-equity"></span><span class="num" id="v-p2-equity">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-equity"></td>
+          <td class="period-col val-cell pending" id="cell-p3-equity"><span class="delta" id="d-p3-equity"></span><span class="num" id="v-p3-equity">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-equity"></td>
+          <td class="period-col val-cell pending" id="cell-p4-equity"><span class="delta" id="d-p4-equity"></span><span class="num" id="v-p4-equity">—</span></td>
+        </tr>
+        <tr>
+          <td class="row-label">Накопленная прибыль</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-retained"></td>
+          <td class="period-col val-cell pending" id="cell-p1-retained"><span class="delta" id="d-p1-retained"></span><span class="num" id="v-p1-retained">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-retained"></td>
+          <td class="period-col val-cell pending" id="cell-p2-retained"><span class="delta" id="d-p2-retained"></span><span class="num" id="v-p2-retained">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-retained"></td>
+          <td class="period-col val-cell pending" id="cell-p3-retained"><span class="delta" id="d-p3-retained"></span><span class="num" id="v-p3-retained">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-retained"></td>
+          <td class="period-col val-cell pending" id="cell-p4-retained"><span class="delta" id="d-p4-retained"></span><span class="num" id="v-p4-retained">—</span></td>
+        </tr>
+        <tr class="tot">
+          <td class="row-label">Итого пассивы</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-liab"></td>
+          <td class="period-col val-cell pending" id="cell-p1-liab"><span class="delta" id="d-p1-liab"></span><span class="num" id="v-p1-liab">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-liab"></td>
+          <td class="period-col val-cell pending" id="cell-p2-liab"><span class="delta" id="d-p2-liab"></span><span class="num" id="v-p2-liab">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-liab"></td>
+          <td class="period-col val-cell pending" id="cell-p3-liab"><span class="delta" id="d-p3-liab"></span><span class="num" id="v-p3-liab">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-liab"></td>
+          <td class="period-col val-cell pending" id="cell-p4-liab"><span class="delta" id="d-p4-liab"></span><span class="num" id="v-p4-liab">—</span></td>
+        </tr>
+        <tr class="grp-hd green"><td colspan="10">Отчёт о прибыли</td></tr>
+        <tr>
+          <td class="row-label">Выручка</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-revenue"></td>
+          <td class="period-col val-cell pending" id="cell-p1-revenue"><span class="delta" id="d-p1-revenue"></span><span class="num" id="v-p1-revenue">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-revenue"></td>
+          <td class="period-col val-cell pending" id="cell-p2-revenue"><span class="delta" id="d-p2-revenue"></span><span class="num" id="v-p2-revenue">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-revenue"></td>
+          <td class="period-col val-cell pending" id="cell-p3-revenue"><span class="delta" id="d-p3-revenue"></span><span class="num" id="v-p3-revenue">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-revenue"></td>
+          <td class="period-col val-cell pending" id="cell-p4-revenue"><span class="delta" id="d-p4-revenue"></span><span class="num" id="v-p4-revenue">—</span></td>
+        </tr>
+        <tr>
+          <td class="row-label">Расходы на персонал</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-payroll"></td>
+          <td class="period-col val-cell pending" id="cell-p1-payroll"><span class="delta" id="d-p1-payroll"></span><span class="num" id="v-p1-payroll">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-payroll"></td>
+          <td class="period-col val-cell pending" id="cell-p2-payroll"><span class="delta" id="d-p2-payroll"></span><span class="num" id="v-p2-payroll">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-payroll"></td>
+          <td class="period-col val-cell pending" id="cell-p3-payroll"><span class="delta" id="d-p3-payroll"></span><span class="num" id="v-p3-payroll">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-payroll"></td>
+          <td class="period-col val-cell pending" id="cell-p4-payroll"><span class="delta" id="d-p4-payroll"></span><span class="num" id="v-p4-payroll">—</span></td>
+        </tr>
+        <tr>
+          <td class="row-label">Списание сомнительной ДЗ</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-baddebt"></td>
+          <td class="period-col val-cell pending" id="cell-p1-baddebt"><span class="delta" id="d-p1-baddebt"></span><span class="num" id="v-p1-baddebt">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-baddebt"></td>
+          <td class="period-col val-cell pending" id="cell-p2-baddebt"><span class="delta" id="d-p2-baddebt"></span><span class="num" id="v-p2-baddebt">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-baddebt"></td>
+          <td class="period-col val-cell pending" id="cell-p3-baddebt"><span class="delta" id="d-p3-baddebt"></span><span class="num" id="v-p3-baddebt">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-baddebt"></td>
+          <td class="period-col val-cell pending" id="cell-p4-baddebt"><span class="delta" id="d-p4-baddebt"></span><span class="num" id="v-p4-baddebt">—</span></td>
+        </tr>
+        <tr class="tot">
+          <td class="row-label">Чистая прибыль</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-netprofit"></td>
+          <td class="period-col val-cell pending" id="cell-p1-netprofit"><span class="delta" id="d-p1-netprofit"></span><span class="num" id="v-p1-netprofit">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-netprofit"></td>
+          <td class="period-col val-cell pending" id="cell-p2-netprofit"><span class="delta" id="d-p2-netprofit"></span><span class="num" id="v-p2-netprofit">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-netprofit"></td>
+          <td class="period-col val-cell pending" id="cell-p3-netprofit"><span class="delta" id="d-p3-netprofit"></span><span class="num" id="v-p3-netprofit">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-netprofit"></td>
+          <td class="period-col val-cell pending" id="cell-p4-netprofit"><span class="delta" id="d-p4-netprofit"></span><span class="num" id="v-p4-netprofit">—</span></td>
+        </tr>
+        <tr class="grp-hd"><td colspan="10">ДДС</td></tr>
+        <tr>
+          <td class="row-label">Операционная деятельность</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-opcf"></td>
+          <td class="period-col val-cell pending" id="cell-p1-opcf"><span class="delta" id="d-p1-opcf"></span><span class="num" id="v-p1-opcf">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-opcf"></td>
+          <td class="period-col val-cell pending" id="cell-p2-opcf"><span class="delta" id="d-p2-opcf"></span><span class="num" id="v-p2-opcf">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-opcf"></td>
+          <td class="period-col val-cell pending" id="cell-p3-opcf"><span class="delta" id="d-p3-opcf"></span><span class="num" id="v-p3-opcf">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-opcf"></td>
+          <td class="period-col val-cell pending" id="cell-p4-opcf"><span class="delta" id="d-p4-opcf"></span><span class="num" id="v-p4-opcf">—</span></td>
+        </tr>
+        <tr>
+          <td class="row-label">Инвестиционная деятельность</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-invcf"></td>
+          <td class="period-col val-cell pending" id="cell-p1-invcf"><span class="delta" id="d-p1-invcf"></span><span class="num" id="v-p1-invcf">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-invcf"></td>
+          <td class="period-col val-cell pending" id="cell-p2-invcf"><span class="delta" id="d-p2-invcf"></span><span class="num" id="v-p2-invcf">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-invcf"></td>
+          <td class="period-col val-cell pending" id="cell-p3-invcf"><span class="delta" id="d-p3-invcf"></span><span class="num" id="v-p3-invcf">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-invcf"></td>
+          <td class="period-col val-cell pending" id="cell-p4-invcf"><span class="delta" id="d-p4-invcf"></span><span class="num" id="v-p4-invcf">—</span></td>
+        </tr>
+        <tr>
+          <td class="row-label">Финансовая деятельность</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-fincf"></td>
+          <td class="period-col val-cell pending" id="cell-p1-fincf"><span class="delta" id="d-p1-fincf"></span><span class="num" id="v-p1-fincf">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-fincf"></td>
+          <td class="period-col val-cell pending" id="cell-p2-fincf"><span class="delta" id="d-p2-fincf"></span><span class="num" id="v-p2-fincf">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-fincf"></td>
+          <td class="period-col val-cell pending" id="cell-p3-fincf"><span class="delta" id="d-p3-fincf"></span><span class="num" id="v-p3-fincf">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-fincf"></td>
+          <td class="period-col val-cell pending" id="cell-p4-fincf"><span class="delta" id="d-p4-fincf"></span><span class="num" id="v-p4-fincf">—</span></td>
+        </tr>
+        <tr class="tot">
+          <td class="row-label">Остаток на конец периода</td>
+          <td class="period-col">$0</td>
+          <td class="gap-col gap-post" id="gcell-p1-endcash"></td>
+          <td class="period-col val-cell pending" id="cell-p1-endcash"><span class="delta" id="d-p1-endcash"></span><span class="num" id="v-p1-endcash">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p2-endcash"></td>
+          <td class="period-col val-cell pending" id="cell-p2-endcash"><span class="delta" id="d-p2-endcash"></span><span class="num" id="v-p2-endcash">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p3-endcash"></td>
+          <td class="period-col val-cell pending" id="cell-p3-endcash"><span class="delta" id="d-p3-endcash"></span><span class="num" id="v-p3-endcash">—</span></td>
+          <td class="gap-col gap-post" id="gcell-p4-endcash"></td>
+          <td class="period-col val-cell pending" id="cell-p4-endcash"><span class="delta" id="d-p4-endcash"></span><span class="num" id="v-p4-endcash">—</span></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="balance-check">✓ Итого активы = Итого пассивы на каждом периоде · Остаток денег в ДДС = Денежные средства в Балансе</div>
+  </div>
+  <!-- SECTION: дополнительные сложности -->
+  <div class="section">
+    <div class="section-hd"><span class="snum">1.5</span><h2>Дополнительные сложности</h2></div>
+    <div class="board-toolbar">
+      <button class="sticker-btn" id="stickerBtn" onclick="stickerClick()">+ Стикер</button>
+      <div class="reset-link" onclick="resetStickers()">↺ Сбросить</div>
+    </div>
+    <div class="whiteboard" id="whiteboard">
+      <div class="sticker c-purple" id="sticker0">
+        <div class="s-title">Множество стандартов отчётности</div>
+        <div class="s-tags"><span>РСБУ</span><span>МСФО</span><span>Налоговая</span></div>
+      </div>
+      <div class="sticker c-green" id="sticker1">
+        <div class="s-title">Множество юр. лиц в разных юрисдикциях</div>
+      </div>
+      <div class="sticker c-dark" id="sticker2">
+        <div class="s-title">Интеграция функций и процессов в модулях 1С</div>
+        <div class="s-sub">HR-модуль · модуль закупок · модуль сверок · согласование заявок и т.д.</div>
+      </div>
+      <div class="sticker c-orange" id="sticker3">
+        <div class="s-title">Расчёт вознаграждения каждого сотрудника</div>
+        <div class="s-sub">найм · отпуска · разные юрисдикции · валюты выплат · изменения зарплаты и т.д.</div>
+      </div>
+      <div class="sticker c-purple" id="sticker4">
+        <div class="s-title">Несколько контуров</div>
+        <div class="s-sub">юридические лица и управленческий</div>
+      </div>
+      <div class="sticker c-green" id="sticker5">
+        <div class="s-title">Одна операция — несколько аналитик</div>
+        <div class="s-sub">юр. лицо · БЮ · проект · функциональный отдел и т.д.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: проект капитализация — определение -->
+  <div class="section">
+    <div class="section-hd"><span class="snum">2.1</span><h2>Определение</h2></div>
+    <div class="cap-def">
+      <div class="cap-def-title">Проект «Капитализация»</div>
+      <div class="cap-def-sub">продажа доли компании</div>
+    </div>
+    <div class="cap-cond-hd">Необходимые условия</div>
+    <div class="cap-conditions">
+      <div class="cap-cond"><span class="cap-cond-num">1</span><span class="cap-cond-txt">Бизнес юридически оформлен</span></div>
+      <div class="cap-cond"><span class="cap-cond-num">2</span><span class="cap-cond-txt">Бизнес дорастает до $1 млрд с высокими мультипликаторами</span></div>
+      <div class="cap-cond"><span class="cap-cond-num">3</span><span class="cap-cond-txt">Сделка реализована</span></div>
+    </div>
+  </div>
+
+  <!-- SECTION: из чего складывается оценка бизнеса -->
+  <div class="section">
+    <div class="section-hd"><span class="snum">2.2</span><h2>Из чего складывается оценка бизнеса</h2></div>
+    <div class="cap-methods-note">
+      <span class="cap-methods-label">Существует несколько методик оценки бизнеса — здесь разобрана одна из них:</span>
+      <div class="cap-methods-list">
+        <span class="cap-method-chip active">Метод мультипликаторов <span class="cap-method-tag">в этом примере</span></span>
+        <span class="cap-method-chip">Дисконтированные денежные потоки (DCF)</span>
+        <span class="cap-method-chip">Метод чистых активов</span>
+        <span class="cap-method-chip">Метод сделок (прецедентных сделок)</span>
+      </div>
+    </div>
+    <div class="board-toolbar">
+      <div class="reset-link" onclick="collapseCapTree()">↺ Свернуть всё</div>
+      <span class="cap-year-note">Пример: текущая оценка компании за 2025&nbsp;год · цель проекта — $1&nbsp;млрд</span>
+    </div>
+    <div class="cap-tree">
+      <div class="tree-root">
+        <div class="cap-node root" id="capNode-cap">
+          <div class="cap-node-top">
+            <div class="cap-node-label">Капитализация</div>
+            <button class="cap-toggle" onclick="toggleCapNode('cap')">+</button>
+          </div>
+          <div class="cap-node-value">$250&nbsp;млн</div>
+          <div class="cap-formula">= EBITDA × Мультипликатор</div>
+        </div>
+        <div class="tree-children" id="capChildren-cap" style="display:none;">
+          <div class="tree-child">
+            <div class="tree-child-inner">
+              <div class="cap-node branch def-clickable" id="capNode-ebitda" onclick="openModal('ebitdaModal')">
+                <div class="cap-node-top">
+                  <div class="cap-node-label">EBITDA <span class="cap-info-ic">ⓘ</span></div>
+                  <button class="cap-toggle" onclick="event.stopPropagation();toggleCapNode('ebitda')">+</button>
+                </div>
+                <div class="cap-node-value">$65&nbsp;млн</div>
+                <div class="cap-node-sub">маржинальность 48%</div>
+                <div class="cap-formula">= Выручка × Маржинальность</div>
+              </div>
+              <div class="tree-children" id="capChildren-ebitda" style="display:none;">
+                <div class="tree-child"><div class="tree-child-inner"><div class="cap-node leaf"><div class="cap-node-label">Выручка</div><div class="cap-node-value">$135&nbsp;млн</div></div></div></div>
+                <div class="tree-child"><div class="tree-child-inner"><div class="cap-node leaf"><div class="cap-node-label">Маржинальность</div><div class="cap-node-value">48%</div></div></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tree-child">
+            <div class="tree-child-inner">
+              <div class="cap-node branch def-clickable" id="capNode-multiple" onclick="openModal('multipleModal')">
+                <div class="cap-node-top">
+                  <div class="cap-node-label">Мультипликатор <span class="cap-info-ic">ⓘ</span></div>
+                  <button class="cap-toggle" onclick="event.stopPropagation();toggleCapNode('multiple')">+</button>
+                </div>
+                <div class="cap-node-value">3,9</div>
+                <div class="cap-formula">= рыночный мультипликатор + премии − дисконты</div>
+              </div>
+              <div class="tree-children" id="capChildren-multiple" style="display:none;">
+                <div class="tree-child"><div class="tree-child-inner"><div class="cap-node leaf def-clickable" id="capNode-market" onclick="openModal('marketModal')"><div class="cap-node-label">Рыночный мультипликатор сопоставимых компаний <span class="cap-info-ic">ⓘ</span></div><div class="cap-node-value">7,7</div></div></div></div>
+                <div class="tree-child">
+                  <div class="tree-child-inner">
+                    <div class="cap-node branch small def-clickable" id="capNode-premiums" onclick="openModal('premiumsModal')">
+                      <div class="cap-node-top">
+                        <div class="cap-node-label">Премии <span class="cap-info-ic">ⓘ</span></div>
+                        <button class="cap-toggle" onclick="event.stopPropagation();toggleCapNode('premiums')">+</button>
+                      </div>
+                      <div class="cap-node-value pos">+35%</div>
+                    </div>
+                    <div class="cap-list" id="capList-premiums">
+                      <div class="cap-list-row"><span>Премия за рост</span><span class="pos">+15%</span></div>
+                      <div class="cap-list-row"><span>Премия за маржинальность</span><span class="pos">+10%</span></div>
+                      <div class="cap-list-row"><span>Премия за AI (в основе бизнес-модели)</span><span class="pos">+10%</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="tree-child">
+                  <div class="tree-child-inner">
+                    <div class="cap-node branch small def-clickable" id="capNode-discounts" onclick="openModal('discountsModal')">
+                      <div class="cap-node-top">
+                        <div class="cap-node-label">Дисконты <span class="cap-info-ic">ⓘ</span></div>
+                        <button class="cap-toggle" onclick="event.stopPropagation();toggleCapNode('discounts')">+</button>
+                      </div>
+                      <div class="cap-node-value neg">−85%</div>
+                    </div>
+                    <div class="cap-list" id="capList-discounts">
+                      <div class="cap-list-row"><span>Базовая неликвидность частной компании</span><span class="neg">−20%</span></div>
+                      <div class="cap-list-row"><span>Непрозрачность / качество отчётности</span><span class="neg">−30%</span></div>
+                      <div class="cap-list-row"><span>Нестабильность бизнес-модели</span><span class="neg">−10%</span></div>
+                      <div class="cap-list-row"><span>РФ-дисконт (санкционные риски)</span><span class="neg">−25%</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL: Баланс на весь экран -->
+<div class="modal-overlay" id="balanceModal" onclick="if(event.target===this) closeModal('balanceModal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('balanceModal')">✕</button>
+    <div class="tbl-hd"><span class="badge">BS</span><div><h3>Баланс</h3></div></div>
+    <table class="fin-tbl">
+      <tr class="total"><td>Активы</td></tr>
+      <tr class="spacer"><td></td></tr>
+      <tr><td>Денежные средства</td></tr>
+      <tr><td>Дебиторская задолженность</td></tr>
+      <tr><td>Запасы</td></tr>
+      <tr><td>Инвестиции</td></tr>
+      <tr><td>Основные средства</td></tr>
+      <tr><td>Нематериальные активы</td></tr>
+      <tr><td>Прочие</td></tr>
+      <tr class="total"><td>Итого активы</td></tr>
+      <tr class="spacer"><td></td></tr>
+      <tr class="total"><td>Пассивы</td></tr>
+      <tr class="spacer"><td></td></tr>
+      <tr><td>Акционерный капитал</td></tr>
+      <tr><td>Накопленная прибыль</td></tr>
+      <tr><td>Долгосрочные обязательства</td></tr>
+      <tr><td>Краткосрочные обязательства</td></tr>
+      <tr class="total"><td>Итого пассивы</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL: Отчёт о прибыли на весь экран -->
+<div class="modal-overlay" id="plModal" onclick="if(event.target===this) closeModal('plModal')">
+  <div class="modal-box green">
+    <button class="modal-close" onclick="closeModal('plModal')">✕</button>
+    <div class="tbl-hd"><span class="badge">P&amp;L</span><div><h3>Отчёт о прибыли</h3></div></div>
+    <table class="fin-tbl">
+      <tr><td>Выручка</td></tr>
+      <tr><td>Расходы на персонал</td></tr>
+      <tr><td>Расходы на маркетинг</td></tr>
+      <tr><td>Расходы на ПО</td></tr>
+      <tr><td>Административные расходы</td></tr>
+      <tr><td>Амортизация</td></tr>
+      <tr><td>Прочие расходы</td></tr>
+      <tr class="total"><td>Прибыль до налога на прибыль</td></tr>
+      <tr class="spacer"><td></td></tr>
+      <tr><td>Налог на прибыль</td></tr>
+      <tr class="total"><td>Чистая прибыль</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL: ДДС на весь экран -->
+<div class="modal-overlay" id="cfModal" onclick="if(event.target===this) closeModal('cfModal')">
+  <div class="modal-box dark">
+    <button class="modal-close" onclick="closeModal('cfModal')">✕</button>
+    <div class="tbl-hd"><span class="badge">CF</span><div><h3>ДДС</h3><span class="sub">прямой метод</span></div></div>
+    <table class="fin-tbl">
+      <tr class="total"><td>Операционная деятельность</td></tr>
+      <tr class="spacer"><td></td></tr>
+      <tr><td>Поступления от покупателей</td></tr>
+      <tr><td>Оплата поставщикам</td></tr>
+      <tr><td>Оплата труда персонала</td></tr>
+      <tr><td>Уплаченные налоги</td></tr>
+      <tr><td>Прочие операционные платежи</td></tr>
+      <tr class="total"><td>Итого от операционной деятельности</td></tr>
+      <tr class="spacer"><td></td></tr>
+      <tr class="total"><td>Инвестиционная деятельность</td></tr>
+      <tr class="spacer"><td></td></tr>
+      <tr><td>Приобретение основных средств</td></tr>
+      <tr><td>Продажа активов</td></tr>
+      <tr class="total"><td>Итого от инвестиционной деятельности</td></tr>
+      <tr class="spacer"><td></td></tr>
+      <tr class="total"><td>Финансовая деятельность</td></tr>
+      <tr class="spacer"><td></td></tr>
+      <tr><td>Привлечение долга</td></tr>
+      <tr><td>Погашение долга</td></tr>
+      <tr><td>Взносы / выплаты акционерам</td></tr>
+      <tr class="total"><td>Итого от финансовой деятельности</td></tr>
+      <tr class="spacer"><td></td></tr>
+      <tr class="total"><td>Итого изменение денежных средств</td></tr>
+      <tr class="spacer"><td></td></tr>
+      <tr><td>Остаток на начало периода</td></tr>
+      <tr class="total"><td>Остаток на конец периода</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL: Двойная запись -->
+<div class="modal-overlay" id="doubleEntryModal" onclick="if(event.target===this) closeModal('doubleEntryModal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('doubleEntryModal')">✕</button>
+    <div class="tbl-hd"><span class="badge">01</span><div><h3>Двойная запись</h3></div></div>
+    <p class="expl">Каждая операция отражается минимум в двух местах: откуда ресурс пришёл и куда он ушёл. Именно поэтому баланс всегда сходится — актив и источник его финансирования меняются синхронно, на одну и ту же сумму.</p>
+    <div class="example-box"><span class="ex-lbl">Пример</span>Привлекли инвестиции 5 млн ₽ → одновременно выросли Денежные средства (актив) и Акционерный капитал (источник финансирования).</div>
+  </div>
+</div>
+
+<!-- MODAL: Принцип начисления -->
+<div class="modal-overlay" id="accrualModal" onclick="if(event.target===this) closeModal('accrualModal')">
+  <div class="modal-box green">
+    <button class="modal-close" onclick="closeModal('accrualModal')">✕</button>
+    <div class="tbl-hd"><span class="badge">02</span><div><h3>Принцип начисления</h3></div></div>
+    <p class="expl">Доходы и расходы признаются в момент, когда они фактически возникли — заработаны или понесены, а не когда прошло движение денег по счёту. Поэтому прибыль в P&amp;L и остаток денег в ДДС за один и тот же период почти никогда не совпадают.</p>
+    <div class="example-box"><span class="ex-lbl">Пример</span>Начислили зарплату за месяц → расход уже отражён в Отчёте о прибыли, даже если сама выплата пройдёт только в начале следующего месяца.</div>
+  </div>
+</div>
+
+<!-- MODAL: EBITDA -->
+<div class="modal-overlay" id="ebitdaModal" onclick="if(event.target===this) closeModal('ebitdaModal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('ebitdaModal')">✕</button>
+    <div class="tbl-hd"><span class="badge">EBITDA</span><div><h3>EBITDA</h3></div></div>
+    <p class="expl">Прибыль компании до вычета процентов по кредитам, налога на прибыль, износа основных средств и амортизации нематериальных активов. Показывает, сколько бизнес зарабатывает на своей операционной деятельности — без искажений от того, как он финансируется (долг или капитал), и от учётной политики по амортизации.</p>
+    <div class="example-box"><span class="ex-lbl">Пример</span>Выручка $135&nbsp;млн × маржинальность 48% = EBITDA ≈ $65&nbsp;млн — именно эта цифра умножается на мультипликатор при оценке бизнеса.</div>
+  </div>
+</div>
+
+<!-- MODAL: Мультипликатор -->
+<div class="modal-overlay" id="multipleModal" onclick="if(event.target===this) closeModal('multipleModal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('multipleModal')">✕</button>
+    <div class="tbl-hd"><span class="badge">×</span><div><h3>Мультипликатор</h3></div></div>
+    <p class="expl">Мультипликатор — это количество лет, в течение которых компания с высокой вероятностью будет зарабатывать указанную EBITDA. Чем выше мультипликатор — тем сильнее рынок верит в устойчивость и рост бизнеса; чем ниже — тем быстрее инвестор рассчитывает окупить вложения. Базовое значение берётся из сопоставимых публичных компаний и сделок в отрасли, а затем корректируется премиями и дисконтами под конкретный бизнес.</p>
+    <div class="example-box"><span class="ex-lbl">Пример</span>Рыночный мультипликатор 7,7 × (1 + премии 35% − дисконты 85%) = 7,7 × 0,5 ≈ 3,9 — то есть инвестор рассчитывает, что вложения в этот бизнес окупятся его EBITDA примерно за 3,9 года.</div>
+  </div>
+</div>
+
+<!-- MODAL: Рыночный мультипликатор -->
+<div class="modal-overlay" id="marketModal" onclick="if(event.target===this) closeModal('marketModal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('marketModal')">✕</button>
+    <div class="tbl-hd"><span class="badge">7,7</span><div><h3>Рыночный мультипликатор</h3></div></div>
+    <p class="expl">Это «средняя цена» в годах EBITDA, которую рынок платит за типичную сопоставимую компанию в отрасли. Премии и дисконты сдвигают этот срок в зависимости от того, чем конкретно ваш бизнес отличается от этой средней компании — по риску и по перспективам.</p>
+    <div class="example-box"><span class="ex-lbl">Пример</span>Если бы этот бизнес был точно таким же, как среднестатистическая сопоставимая компания в отрасли, инвестор был бы готов платить за него 7,7 годовых EBITDA.</div>
+  </div>
+</div>
+
+<!-- MODAL: Премии -->
+<div class="modal-overlay" id="premiumsModal" onclick="if(event.target===this) closeModal('premiumsModal')">
+  <div class="modal-box green">
+    <button class="modal-close" onclick="closeModal('premiumsModal')">✕</button>
+    <div class="tbl-hd"><span class="badge">+</span><div><h3>Премии</h3></div></div>
+    <p class="expl">Премия увеличивает мультипликатор, то есть удлиняет срок, за который инвестор готов «отбить» вложения. Если бизнес растёт быстрее среднего или маржинальнее среднего, инвестор верит, что через пару лет EBITDA будет заметно выше сегодняшней — и готов заплатить как бы «больше лет» сегодняшней прибыли, ведь по факту он платит за прибыль будущую, которая окажется больше.</p>
+    <div class="example-box"><span class="ex-lbl">Пример</span>Премия за рост +15%, за маржинальность +10%, за AI в основе бизнес-модели +10% — итого +35% к рыночному мультипликатору.</div>
+  </div>
+</div>
+
+<!-- MODAL: Дисконты -->
+<div class="modal-overlay" id="discountsModal" onclick="if(event.target===this) closeModal('discountsModal')">
+  <div class="modal-box dark">
+    <button class="modal-close" onclick="closeModal('discountsModal')">✕</button>
+    <div class="tbl-hd"><span class="badge">−</span><div><h3>Дисконты</h3></div></div>
+    <p class="expl">Дисконт, наоборот, укорачивает этот срок — инвестор хочет отбить вложения быстрее, потому что видит дополнительный риск не получить обещанную EBITDA вообще.</p>
+    <div class="example-box"><span class="ex-lbl">Пример</span>Неликвидность частной компании (её нельзя быстро продать, если что-то пойдёт не так, −20%), непрозрачность отчётности (сложнее доверять цифре EBITDA, −30%), нестабильность бизнес-модели (−10%) и страновой/санкционный риск (−25%) — все эти риски снижают уверенность, что заявленная прибыль реализуется в срок и в полном объёме.</div>
+  </div>
+</div>
+
+<script>
+  function openModal(id){
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id){
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      document.querySelectorAll('.modal-overlay.open').forEach(function(m){
+        m.classList.remove('open');
+      });
+      document.body.style.overflow = '';
+    }
+  });
+
+  // --- метрики: линии к строкам отчётов ---
+  var metricDefs = {
+    margin: { tile: 'metricMargin', rows: ['row-revenue', 'row-net-profit'] },
+    roi:    { tile: 'metricROI',    rows: ['row-net-profit', 'row-equity', 'row-retained'] }
+  };
+  var activeMetric = null;
+
+  function toggleMetric(key){
+    if(activeMetric === key){ clearMetric(); return; }
+    clearMetric();
+    activeMetric = key;
+    var def = metricDefs[key];
+    document.getElementById(def.tile).classList.add('active');
+    def.rows.forEach(function(id){
+      document.getElementById(id).classList.add('row-highlight');
+    });
+    drawLines(def);
+  }
+
+  function clearMetric(){
+    document.querySelectorAll('.metric-tile.active').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.row-highlight').forEach(function(r){ r.classList.remove('row-highlight'); });
+    var svg = document.getElementById('connectorSvg');
+    if(svg) svg.innerHTML = '';
+    activeMetric = null;
+  }
+
+  function drawLines(def){
+    var svg = document.getElementById('connectorSvg');
+    var container = document.querySelector('.tbl-cols');
+    if(!svg || !container) return;
+    svg.innerHTML = '';
+    var cRect = container.getBoundingClientRect();
+    var tile = document.getElementById(def.tile);
+    var tRect = tile.getBoundingClientRect();
+    var startX = tRect.left - cRect.left;
+    var startY = tRect.top - cRect.top + tRect.height / 2;
+
+    def.rows.forEach(function(id){
+      var row = document.getElementById(id);
+      if(!row) return;
+      var rRect = row.getBoundingClientRect();
+      var endX = rRect.right - cRect.left;
+      var endY = rRect.top - cRect.top + rRect.height / 2;
+      var midX = (startX + endX) / 2;
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M ' + startX + ' ' + startY + ' C ' + midX + ' ' + startY + ', ' + midX + ' ' + endY + ', ' + endX + ' ' + endY);
+      svg.appendChild(path);
+      [[startX, startY], [endX, endY]].forEach(function(pt){
+        var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', pt[0]);
+        c.setAttribute('cy', pt[1]);
+        c.setAttribute('r', 4);
+        svg.appendChild(c);
+      });
+    });
+  }
+
+  window.addEventListener('resize', function(){
+    if(activeMetric) drawLines(metricDefs[activeMetric]);
+  });
+
+  // --- бухгалтерский леджер кейса: проводки → 3 формы по периодам ---
+  var ledgerOps = [
+    { id:0, period:1, deltas:{ cash:150000, equity:150000, fincf:150000 } },
+    { id:1, period:2, deltas:{ cash:-15000, equip:15000, invcf:-15000 } },
+    { id:2, period:3, deltas:{ payroll:15000, ap:15000 } },
+    { id:3, period:3, deltas:{ ap:-15000, cash:-15000, opcf:-15000 } },
+    { id:4, period:4, deltas:{ ar:5000, revenue:5000 } },
+    { id:5, period:4, deltas:{ cash:4000, baddebt:1000, ar:-5000, opcf:4000 } }
+  ];
+  function opLegs(op){
+    return Object.keys(op.deltas).map(function(row){ return { row: row, amount: op.deltas[row] }; });
+  }
+  var ledgerAllRowKeys = ['cash','ar','equip','assets','ap','equity','retained','liab','revenue','payroll','baddebt','netprofit','opcf','invcf','fincf','endcash'];
+  var ledgerState = { cash:0, ar:0, equip:0, ap:0, equity:0, revenue:0, payroll:0, baddebt:0, opcf:0, invcf:0, fincf:0 };
+  var nextOpIndex = 0;
+  var ledgerCellTimeouts = {};
+  var ledgerLineTimeout = null;
+  var ledgerPostNodes = {}; // op.id -> [DOM nodes] posted into gap cells, so undo can remove them
+
+  function fmtLedger(n){
+    var sign = n < 0 ? '−' : '';
+    return sign + '$' + Math.round(Math.abs(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+  function fmtLedgerDelta(diff){
+    var sign = diff > 0 ? '+' : '−';
+    return sign + '$' + Math.round(Math.abs(diff)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+
+  function deriveLedger(s){
+    var netprofit = s.revenue - s.payroll - s.baddebt;
+    return {
+      cash: s.cash, ar: s.ar, equip: s.equip, assets: s.cash + s.ar + s.equip,
+      ap: s.ap, equity: s.equity, retained: netprofit, liab: s.ap + s.equity + netprofit,
+      revenue: s.revenue, payroll: s.payroll, baddebt: s.baddebt, netprofit: netprofit,
+      opcf: s.opcf, invcf: s.invcf, fincf: s.fincf, endcash: s.opcf + s.invcf + s.fincf
+    };
+  }
+
+  function updateLedgerCell(period, key, newVal, oldVal){
+    var cell = document.getElementById('cell-p' + period + '-' + key);
+    var numEl = document.getElementById('v-p' + period + '-' + key);
+    var deltaEl = document.getElementById('d-p' + period + '-' + key);
+    if(!cell || !numEl || !deltaEl) return;
+    cell.classList.remove('pending');
+    var tKey = period + '-' + key;
+    if(ledgerCellTimeouts[tKey]){
+      clearTimeout(ledgerCellTimeouts[tKey]);
+      delete ledgerCellTimeouts[tKey];
+    }
+    var diff = newVal - oldVal;
+    if(diff !== 0){
+      deltaEl.textContent = fmtLedgerDelta(diff);
+      deltaEl.classList.add('show');
+      numEl.classList.add('flash');
+      ledgerCellTimeouts[tKey] = setTimeout(function(){
+        deltaEl.classList.remove('show');
+        numEl.classList.remove('flash');
+        delete ledgerCellTimeouts[tKey];
+      }, 1800);
+    } else {
+      deltaEl.classList.remove('show');
+      numEl.classList.remove('flash');
+    }
+    numEl.textContent = fmtLedger(newVal);
+  }
+
+  function resetPeriodToPending(period){
+    ledgerAllRowKeys.forEach(function(key){
+      var cell = document.getElementById('cell-p' + period + '-' + key);
+      var numEl = document.getElementById('v-p' + period + '-' + key);
+      var deltaEl = document.getElementById('d-p' + period + '-' + key);
+      if(!cell || !numEl || !deltaEl) return;
+      var tKey = period + '-' + key;
+      if(ledgerCellTimeouts[tKey]){ clearTimeout(ledgerCellTimeouts[tKey]); delete ledgerCellTimeouts[tKey]; }
+      cell.classList.add('pending');
+      deltaEl.classList.remove('show');
+      numEl.classList.remove('flash');
+      numEl.textContent = '—';
+    });
+  }
+
+  function legClass(leg){
+    return leg.amount >= 0 ? 'kt' : 'dt';
+  }
+
+  function postEntry(op){
+    var nodes = [];
+    opLegs(op).forEach(function(leg){
+      var cell = document.getElementById('gcell-p' + op.period + '-' + leg.row);
+      if(!cell) return;
+      var div = document.createElement('div');
+      div.className = 'post-entry ' + legClass(leg);
+      div.textContent = fmtLedgerDelta(leg.amount);
+      cell.appendChild(div);
+      nodes.push(div);
+    });
+    ledgerPostNodes[op.id] = nodes;
+  }
+
+  function unpostEntry(op){
+    (ledgerPostNodes[op.id] || []).forEach(function(node){ node.remove(); });
+    ledgerPostNodes[op.id] = [];
+  }
+
+  function drawLedgerLines(op){
+    var svg = document.getElementById('ledgerSvg');
+    var wrap = document.getElementById('ledgerWrap');
+    var chip = document.querySelector('.op-chip[data-op="' + op.id + '"]');
+    if(!svg || !wrap || !chip) return;
+    svg.innerHTML = '';
+    var wRect = wrap.getBoundingClientRect();
+    var cRect = chip.getBoundingClientRect();
+    var startX = cRect.left - wRect.left + cRect.width / 2;
+    var startY = cRect.bottom - wRect.top;
+    opLegs(op).forEach(function(leg){
+      var cell = document.getElementById('cell-p' + op.period + '-' + leg.row);
+      if(!cell) return;
+      var rRect = cell.getBoundingClientRect();
+      var endX = rRect.left - wRect.left + rRect.width / 2;
+      var endY = rRect.top - wRect.top;
+      var midY = (startY + endY) / 2;
+      var cls = 'ln-' + legClass(leg);
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M ' + startX + ' ' + startY + ' C ' + startX + ' ' + midY + ', ' + endX + ' ' + midY + ', ' + endX + ' ' + endY);
+      path.setAttribute('class', cls);
+      svg.appendChild(path);
+      var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('cx', endX);
+      c.setAttribute('cy', endY);
+      c.setAttribute('r', 3);
+      c.setAttribute('class', cls);
+      svg.appendChild(c);
+    });
+    if(ledgerLineTimeout) clearTimeout(ledgerLineTimeout);
+    ledgerLineTimeout = setTimeout(function(){ svg.innerHTML = ''; }, 1800);
+  }
+
+  function updateOpChips(){
+    document.querySelectorAll('.op-chip').forEach(function(chip){
+      var idx = parseInt(chip.getAttribute('data-op'), 10);
+      chip.classList.remove('next', 'done', 'undoable');
+      if(idx < nextOpIndex){
+        chip.classList.add('done');
+        if(idx === nextOpIndex - 1) chip.classList.add('undoable');
+      } else if(idx === nextOpIndex){
+        chip.classList.add('next');
+      }
+    });
+  }
+
+  function clickOp(idx){
+    if(idx === nextOpIndex){
+      applyOp(idx);
+    } else if(idx === nextOpIndex - 1){
+      undoOp(idx);
+    }
+  }
+
+  function applyOp(idx){
+    var op = ledgerOps[idx];
+    var oldRows = deriveLedger(ledgerState);
+    Object.keys(op.deltas).forEach(function(k){
+      ledgerState[k] = (ledgerState[k] || 0) + op.deltas[k];
+    });
+    var newRows = deriveLedger(ledgerState);
+    ledgerAllRowKeys.forEach(function(key){
+      updateLedgerCell(op.period, key, newRows[key], oldRows[key]);
+    });
+    postEntry(op);
+    drawLedgerLines(op);
+    nextOpIndex++;
+    updateOpChips();
+  }
+
+  function undoOp(idx){
+    var op = ledgerOps[idx];
+    var oldRows = deriveLedger(ledgerState);
+    Object.keys(op.deltas).forEach(function(k){
+      ledgerState[k] = (ledgerState[k] || 0) - op.deltas[k];
+    });
+    var newRows = deriveLedger(ledgerState);
+    var stillApplied = ledgerOps.some(function(o, i){ return i < idx && o.period === op.period; });
+    if(stillApplied){
+      ledgerAllRowKeys.forEach(function(key){
+        updateLedgerCell(op.period, key, newRows[key], oldRows[key]);
+      });
+    } else {
+      resetPeriodToPending(op.period);
+    }
+    unpostEntry(op);
+    var svg = document.getElementById('ledgerSvg');
+    if(svg) svg.innerHTML = '';
+    if(ledgerLineTimeout) clearTimeout(ledgerLineTimeout);
+    nextOpIndex = idx;
+    updateOpChips();
+  }
+
+  function resetLedger(){
+    nextOpIndex = 0;
+    ledgerState = { cash:0, ar:0, equip:0, ap:0, equity:0, revenue:0, payroll:0, baddebt:0, opcf:0, invcf:0, fincf:0 };
+    for(var p = 1; p <= 4; p++){ resetPeriodToPending(p); }
+    document.querySelectorAll('.gap-post').forEach(function(cell){ cell.innerHTML = ''; });
+    ledgerPostNodes = {};
+    var svg = document.getElementById('ledgerSvg');
+    if(svg) svg.innerHTML = '';
+    updateOpChips();
+  }
+
+  updateOpChips();
+
+  // --- доска со стикерами: сложности ---
+  var STICKER_COUNT = 6;
+  var BOARD_W = 1056, BOARD_H = 380;
+  var BIG_W = 480, BIG_H = 300;
+  var stickerSlots = [
+    { left:122, top:36,  rot:-4 },
+    { left:434, top:36,  rot:3 },
+    { left:746, top:36,  rot:-2 },
+    { left:122, top:214, rot:2 },
+    { left:434, top:214, rot:-3 },
+    { left:746, top:214, rot:4 }
+  ];
+  var bigPos = { left:(BOARD_W - BIG_W) / 2, top:(BOARD_H - BIG_H) / 2 };
+  var stickerIndex = 0;
+  var stickerPhase = 'idle'; // 'idle' -> next click reveals big; 'big' -> next click places it
+
+  function stickerEl(i){ return document.getElementById('sticker' + i); }
+
+  function layoutSticker(i, state){
+    var el = stickerEl(i);
+    if(!el) return;
+    if(state === 'big'){
+      el.style.left = bigPos.left + 'px';
+      el.style.top = bigPos.top + 'px';
+      el.style.width = BIG_W + 'px';
+      el.style.height = BIG_H + 'px';
+      el.style.transform = 'rotate(0deg)';
+      el.classList.remove('placed');
+      el.classList.add('big');
+    } else {
+      var slot = stickerSlots[i];
+      el.style.left = slot.left + 'px';
+      el.style.top = slot.top + 'px';
+      el.style.width = '190px';
+      el.style.height = '130px';
+      el.style.transform = 'rotate(' + slot.rot + 'deg)';
+      el.classList.remove('big');
+      el.classList.add('placed');
+    }
+  }
+
+  function updateStickerBtn(){
+    var btn = document.getElementById('stickerBtn');
+    if(!btn) return;
+    if(stickerIndex >= STICKER_COUNT){
+      btn.textContent = 'Готово';
+      btn.disabled = true;
+    } else if(stickerPhase === 'big'){
+      btn.textContent = 'Приклеить';
+      btn.disabled = false;
+    } else {
+      btn.textContent = '+ Стикер';
+      btn.disabled = false;
+    }
+  }
+
+  function stickerClick(){
+    if(stickerIndex >= STICKER_COUNT) return;
+    if(stickerPhase === 'idle'){
+      layoutSticker(stickerIndex, 'big');
+      var el = stickerEl(stickerIndex);
+      // start from big position at slightly smaller scale, then pop to full opacity
+      el.style.opacity = '0';
+      requestAnimationFrame(function(){
+        el.classList.add('show');
+        el.style.opacity = '1';
+      });
+      stickerPhase = 'big';
+    } else {
+      layoutSticker(stickerIndex, 'placed');
+      stickerIndex++;
+      stickerPhase = 'idle';
+    }
+    updateStickerBtn();
+  }
+
+  function resetStickers(){
+    for(var i = 0; i < STICKER_COUNT; i++){
+      var el = stickerEl(i);
+      if(!el) continue;
+      el.classList.remove('show', 'big', 'placed');
+      el.style.opacity = '0';
+      el.style.left = stickerSlots[i].left + 'px';
+      el.style.top = stickerSlots[i].top + 'px';
+      el.style.width = '190px';
+      el.style.height = '130px';
+      el.style.transform = 'rotate(' + stickerSlots[i].rot + 'deg)';
+    }
+    stickerIndex = 0;
+    stickerPhase = 'idle';
+    updateStickerBtn();
+  }
+
+  resetStickers();
+
+  // --- проект «Капитализация»: раскрывающееся дерево оценки бизнеса ---
+  var capNodeKeys = ['cap', 'ebitda', 'multiple', 'premiums', 'discounts'];
+
+  function toggleCapNode(key){
+    var node = document.getElementById('capNode-' + key);
+    var children = document.getElementById('capChildren-' + key);
+    var list = document.getElementById('capList-' + key);
+    var target = children || list;
+    if(!node || !target) return;
+    var opening = target.style.display === 'none' || target.style.display === '';
+    target.style.display = opening ? (children ? '' : 'block') : 'none';
+    node.classList.toggle('expanded', opening);
+    var btn = node.querySelector('.cap-toggle');
+    if(btn) btn.textContent = opening ? '−' : '+';
+  }
+
+  function collapseCapTree(){
+    capNodeKeys.forEach(function(key){
+      var node = document.getElementById('capNode-' + key);
+      var children = document.getElementById('capChildren-' + key);
+      var list = document.getElementById('capList-' + key);
+      if(children) children.style.display = 'none';
+      if(list) list.style.display = 'none';
+      if(node){
+        node.classList.remove('expanded');
+        var btn = node.querySelector('.cap-toggle');
+        if(btn) btn.textContent = '+';
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
