@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо отчёта по PnL в Tableau</title>
+<style>
+  :root {
+    --bg: #F1F3EC;
+    --surface: #FFFFFF;
+    --surface-2: #E9ECE2;
+    --ink: #1C231F;
+    --ink-muted: #5B665F;
+    --ink-faint: #8A9389;
+    --accent: #1D6E5C;
+    --accent-ink: #145446;
+    --accent-soft: #E3EEE8;
+    --gold: #9C7526;
+    --gold-soft: #F3ECDA;
+    --border: #D9DECD;
+    --border-strong: #C3CBB4;
+    --shadow: 0 1px 2px rgba(28, 35, 31, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12160F;
+      --surface: #191F16;
+      --surface-2: #212820;
+      --ink: #E7EAE1;
+      --ink-muted: #A2AC9B;
+      --ink-faint: #6F7A6A;
+      --accent: #55C6A4;
+      --accent-ink: #8CE0C4;
+      --accent-soft: #1D2B23;
+      --gold: #D9AE5E;
+      --gold-soft: #26241A;
+      --border: #2A3325;
+      --border-strong: #3A452F;
+      --shadow: none;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #12160F;
+    --surface: #191F16;
+    --surface-2: #212820;
+    --ink: #E7EAE1;
+    --ink-muted: #A2AC9B;
+    --ink-faint: #6F7A6A;
+    --accent: #55C6A4;
+    --accent-ink: #8CE0C4;
+    --accent-soft: #1D2B23;
+    --gold: #D9AE5E;
+    --gold-soft: #26241A;
+    --border: #2A3325;
+    --border-strong: #3A452F;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", ui-sans-serif, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+
+  h1, h2, h3 {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, Cambria, serif;
+    color: var(--ink);
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .eyebrow {
+    font-family: "Segoe UI", ui-sans-serif, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+  }
+
+  /* ---------- Masthead ---------- */
+
+  .masthead {
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+
+  .masthead .eyebrow { margin-bottom: 14px; display: block; }
+
+  h1.title {
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: -0.01em;
+  }
+
+  .lede {
+    margin-top: 12px;
+    color: var(--ink-muted);
+    font-size: 16.5px;
+    max-width: 34em;
+  }
+
+  .meta-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 18px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border-strong);
+  }
+
+  .meta-item .label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .meta-item .value {
+    margin-top: 4px;
+    font-size: 15px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Sections ---------- */
+
+  section {
+    margin-top: 52px;
+    scroll-margin-top: 20px;
+  }
+
+  h2.section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    font-family: "Segoe UI", ui-sans-serif, sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  h2.section-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border-strong);
+  }
+
+  h3.sub-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 34px;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+
+  section > h3.sub-title:first-of-type { margin-top: 22px; }
+
+  p { margin: 12px 0 0; }
+  p:first-child { margin-top: 0; }
+
+  .prose p + p { margin-top: 14px; }
+
+  /* ---------- TL;DR callout ---------- */
+
+  .tldr {
+    margin-top: 18px;
+    background: var(--accent-soft);
+    border: 1px solid var(--border-strong);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    padding: 22px 24px;
+  }
+
+  .tldr p {
+    font-size: 16px;
+    color: var(--ink);
+  }
+
+  /* ---------- Theses list ---------- */
+
+  ul.theses {
+    list-style: none;
+    margin: 18px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  ul.theses li {
+    position: relative;
+    padding-left: 26px;
+    color: var(--ink);
+  }
+
+  ul.theses li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 9px;
+    height: 9px;
+    border: 2px solid var(--accent);
+    border-radius: 2px;
+    background: transparent;
+  }
+
+  ul.theses li strong { color: var(--ink); }
+
+  /* ---------- Blockquotes ---------- */
+
+  blockquote {
+    margin: 18px 0;
+    padding: 4px 0 4px 20px;
+    border-left: 3px solid var(--gold);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-muted);
+  }
+
+  blockquote cite {
+    display: block;
+    margin-top: 6px;
+    font-family: "Segoe UI", ui-sans-serif, sans-serif;
+    font-style: normal;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- Numbered figure callout (June example) ---------- */
+
+  .figure-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--border-strong);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 20px 0;
+  }
+
+  .figure-strip .cell {
+    background: var(--surface);
+    padding: 16px 18px;
+  }
+
+  .figure-strip .cell .num-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .figure-strip .cell .num-value {
+    margin-top: 6px;
+    font-size: 22px;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .figure-strip .cell.negative .num-value { color: var(--gold); }
+
+  /* ---------- Named-speaker tag ---------- */
+
+  .speaker {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    border: 1px solid var(--border-strong);
+    border-radius: 100px;
+    padding: 2px 10px;
+    margin-bottom: 10px;
+  }
+
+  /* ---------- Roadmap list ---------- */
+
+  ul.roadmap {
+    margin: 14px 0 0;
+    padding-left: 20px;
+  }
+
+  ul.roadmap li {
+    margin-top: 10px;
+    padding-left: 4px;
+  }
+
+  ul.roadmap li::marker {
+    color: var(--gold);
+  }
+
+  /* ---------- Resources table ---------- */
+
+  .table-wrap {
+    margin-top: 18px;
+    overflow-x: auto;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+  }
+
+  table.resources {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+    min-width: 480px;
+  }
+
+  table.resources thead th {
+    text-align: left;
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+
+  table.resources td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  table.resources tbody tr:last-child td { border-bottom: none; }
+
+  table.resources td.term {
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--ink);
+  }
+
+  table.resources tbody tr:hover td {
+    background: var(--surface-2);
+  }
+
+  /* ---------- Footer ---------- */
+
+  footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-strong);
+    color: var(--ink-faint);
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  a { color: var(--accent-ink); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  @media (max-width: 560px) {
+    h1.title { font-size: 27px; }
+    .page { padding: 36px 18px 72px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="masthead">
+    <span class="eyebrow">Конспект созвона · Deeplay</span>
+    <h1 class="title">Демо отчёта по PnL в Tableau</h1>
+    <p class="lede">Ведущий (Alsek) показывает MVP-отчёт по прибыли и убыткам юнитов, разбирает пример июня и отвечает на вопросы руководителей юнитов о данных, доступах и альтернативных способах анализа.</p>
+
+    <div class="meta-row">
+      <div class="meta-item">
+        <div class="label">Тип записи</div>
+        <div class="value">Демо / созвон</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Дата</div>
+        <div class="value">12.08.2026</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Длительность</div>
+        <div class="value">~45 минут</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Аудитория</div>
+        <div class="value">Юниты, главные финансисты</div>
+      </div>
+    </div>
+  </header>
+
+  <section id="tldr">
+    <h2 class="section-title">TL;DR</h2>
+    <div class="tldr">
+      <p>Ведущий показал MVP-отчёт по PNL в Tableau, который тянет данные из ClickHouse (источник — DB9, кроме DFS, заливаемых вручную) и обновляется примерно раз в 6 часов. На примере июня разобрали, как читать таблицу прибыли по юнитам, внешнюю/внутреннюю выручку, алокации между юнитами и как drill-down доводит до первичного документа в DB9.</p>
+      <p>Обсудили открытые проблемы (тормоза отчёта, неидеальную детализацию некоторых сумм, терминологическую путаницу «алокации через распределение затрат и счета»), права доступа (сейчас у участников созвона полный доступ, у остальных планируется доступ с ограничениями) и вкладку сравнения периодов.</p>
+      <p>В конце — альтернативные способы получать кастомные срезы данных без доработки самого отчёта: агент в Sigma с доступом к ClickHouse, агент Claude через коннектор к ClickHouse, а также параллельный эксперимент участника (VVVKamper) по воссозданию дашборда в Datalens через ИИ-агента.</p>
+    </div>
+  </section>
+
+  <section id="theses">
+    <h2 class="section-title">Ключевые тезисы</h2>
+    <ul class="theses">
+      <li>Отчёт по PNL в Tableau — <strong>MVP-версия</strong>, данные берутся из ClickHouse, куда они попадают из DB9 (кроме DFS — заливается вручную); по умолчанию показываются последние два квартала, данные до апреля 2026 г. импортировались вручную из Excel.</li>
+      <li>Незакрытые периоды (например, текущий июль) показывают неполные значения — не загружены все расходы/доходы; в перспективе планируется переключатель «план/факт» для незакрытых месяцев.</li>
+      <li>Верхняя таблица показывает итог прибыли помесячно, нижняя — детализацию по категориям (аналог «фиолетового файла», ранее рассылавшегося в Excel): внешняя выручка, внутренняя выручка, прямые расходы и алокации; любую цифру можно раскрыть drill-down’ом до первичного документа в DB9.</li>
+      <li>Отчёт заметно тормозит; кнопка <strong>Reset View</strong> — самый надёжный способ сбросить фильтрацию (отжатие значений работает нестабильно).</li>
+      <li>Терминология «алокации» сейчас объединяет и старые алокации, и новые межюнитовые счета.</li>
+      <li>Детализация некоторых сумм пока не идеальна, отчёт в разработке, баги фиксируются в бэклоге.</li>
+      <li>Права доступа сегодня у всех присутствующих полные, в перспективе доступ планируется ограничивать по юнитам.</li>
+      <li>Отчёт обновляется раз в 2–6 часов за счёт четырёх интеграций; планируется сократить время обновления.</li>
+      <li>Вкладка <strong>Compare Period</strong> позволяет сравнивать два периода и находить, за счёт чего изменилась цифра, но не даёт прямой ссылки на первичный документ.</li>
+      <li>Для кастомных срезов предложено не заводить задачи в отчёт, а использовать Datalens, агента Claude с доступом к ClickHouse или агента в Sigma.</li>
+      <li>Планы развития: улучшение качества данных в ClickHouse, разметка договоров контрагентов по юнитам (август–сентябрь), что позволит собрать отчёт типа «Баланс» по юнитам (ожидается к октябрю).</li>
+    </ul>
+  </section>
+
+  <section id="origin">
+    <h2 class="section-title">Подробное содержание</h2>
+
+    <h3 class="sub-title">Происхождение и статус отчёта</h3>
+    <div class="prose">
+      <p>Отчёт по PNL в Tableau существует несколько месяцев, его создал Panja из Revenue Office — «помог нам это сделать, пока у нас не было дата-аналитика». Ведущий подчёркивает: «Отчёт показывается, как есть на сегодня, он не идеален, но как MVP-версия». Приоритет — информативность, а не внешний вид: «то есть красоту будем наводить позже, в VP-версии тут важнее информативность».</p>
+    </div>
+
+    <h3 class="sub-title">Источники и обновление данных</h3>
+    <div class="prose">
+      <p>Данные полностью берутся из ClickHouse, куда они попадают из DB9, за исключением DFS, которые заливаются в ClickHouse вручную. По умолчанию отображаются два последних квартала; данные до апреля были импортированы в ClickHouse из Excel и в отчёт добавляться не будут («смысла сейчас в этом особого нет»).</p>
+      <p>Незакрытые периоды могут показывать неполные значения — например, за июль ещё не загружена зарплата (занизит прибыль) и не все доходы (увеличат прибыль). В перспективе планируется переключение: закрытые месяцы — по факту, незакрытые — по плану (с возможной версионностью плана), текущий месяц — на отдельной вкладке. «Но это, повторюсь, перспектива, бэклог достаточно большой по отчёту».</p>
+      <p>Отчёт обновляется примерно раз в 6 часов (максимум, из-за четырёх интеграций), минимум — через 2–3 часа. Планируется сократить это время после отладки данных.</p>
+    </div>
+  </section>
+
+  <section id="june">
+    <h3 class="sub-title">Разбор примера: июнь</h3>
+    <div class="prose">
+      <p>Верхняя таблица — итоговый результат по месяцам, нижняя — разбивка по категориям («фиолетовый файлик»): внешняя выручка, внутренняя выручка (через алокации), прямые расходы, алокации.</p>
+    </div>
+
+    <div class="figure-strip">
+      <div class="cell negative">
+        <div class="num-label">Прибыль, июнь</div>
+        <div class="num-value">$160 000</div>
+      </div>
+      <div class="cell">
+        <div class="num-label">Внутригрупповой баланс</div>
+        <div class="num-value">= 0</div>
+      </div>
+      <div class="cell">
+        <div class="num-label">Причина аномалии</div>
+        <div class="num-value" style="font-size: 15px; font-weight: 500;">Списание по документу DB9</div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <p>Разбор показал, что аномалия объясняется крупным списанием по документу из DB9 (дебиторская задолженность с контрагентом), с комментарием из первоисточника: «списания, украдены и кредиты на убытки по решению управляющих партнёров». Ведущий отметил, что комментарии документов в DB9 не всегда заполняются, но «признак хорошего тона у нас, что комментарии мы заполняем».</p>
+    </div>
+
+    <blockquote>
+      Лучше работать через фильтры, чем, скажем так, нажимая с контролом несколько кнопочек пытаться увидеть результат. У нас пока что не получилось настроить, чтобы это было очень предсказуемо и идеально.
+      <cite>Ведущий, о работе с фильтрами</cite>
+    </blockquote>
+
+    <blockquote>
+      Сразу скажу, отчёт очень сильно тормозит… Тормоза мы частично точно знаем, как убрать, просто не успели к этому созвону. У нас есть тестовая версия, в которой мы уже раза в полтора-два ускорили этот отчёт.
+      <cite>Ведущий, о производительности</cite>
+    </blockquote>
+
+    <div class="prose">
+      <p>Рекомендуется использовать кнопку Reset View вместо последовательного отжатия фильтров, так как последнее нестабильно: «Эта кнопка приводит отчёт в самый первоначальный вид».</p>
+      <p>Пояснена логика сведения: внешняя выручка + прямые затраты юнитов дают финрезультат юнита; внутренняя выручка + алокации в сумме дают ноль (это внутригрупповые операции), а итоговая прибыль холдинга — сумма без учёта внутригрупповых операций.</p>
+    </div>
+  </section>
+
+  <section id="questions">
+    <h2 class="section-title">Вопросы участников</h2>
+
+    <h3 class="sub-title">Прямые/непрямые затраты и терминология алокаций</h3>
+    <span class="speaker">VVVKamper</span>
+    <div class="prose">
+      <p>Рома уточнил про разделение затрат на прямые и алокации (например, MT-услуги видны как прямые). Ведущий пояснил: «Алокация… это, скажем так, распределение… Мы взяли из одного места, положили в другое место», при этом механика изменилась — раньше это было в DB9 одним механизмом, сейчас это счета («щиты») между юнитами, но по сути оба явления называются одинаково — «алокациями».</p>
+      <p>Дополнительно поднят вопрос: не отражённые в структуре юнита сервисные функции (HR, финансисты и т.п.), которые оказываются другими юнитами (DeepRun, HR-хаб) и выставляются через алокации — например, $7000 с HR-хаба на DM Hub.</p>
+    </div>
+
+    <h3 class="sub-title">Детализация и баги</h3>
+    <span class="speaker">VVVKamper</span>
+    <div class="prose">
+      <p>При попытке раскрыть детализацию суммы 63 000 обнаружилось несоответствие с раскрытой суммой 93 000 — признано багом: «А потому что, смотри, 63 — это сумма всех вот этих вот. Короче, надо поработать». Также обсудили сходимость выручки юнита с показателями сверху — совпало на примере 27 000.</p>
+    </div>
+    <blockquote>
+      У нас ещё не всё идеально здесь… но с нового фингода хочу, чтобы как в аптеке было прямо всё чётко, как в аптеке.
+      <cite>Ведущий</cite>
+    </blockquote>
+
+    <h3 class="sub-title">Фильтрация по Business Unit</h3>
+    <span class="speaker">Unison</span>
+    <div class="prose">
+      <p>Не смогла отфильтровать по Business Unit, так как в фильтре отображаются названия фирм управленческого учёта (Unit Name), а не привычные названия юнитов (AllocationCFU). Признано неюзерфрендли: «В бэклоге есть тоже такое понятие, как сделать юзерфрендли отчёт».</p>
+    </div>
+
+    <h3 class="sub-title">Права доступа</h3>
+    <span class="speaker">VVVKamper</span>
+    <div class="prose">
+      <p>На сегодня у всех присутствующих доступ на уровне отчёта полный (настроены группы по юнитам, например DePR с фильтром по DePR, но у части присутствующих — группа UCEO/VIPS с полным доступом). Ведущий считает, что главные финансисты юнитов должны иметь полный доступ к отчётности, «они не должны в вакууме быть внутри юнита», но вопрос ограничения доступа остаётся открытым и «политическим».</p>
+    </div>
+
+    <h3 class="sub-title">Эскалация вопросов по отчёту</h3>
+    <div class="prose">
+      <p>Ведущий предложил присылать вопросы и замечания по данным в личку в Mattermost, но по итогам созвона планирует создать единую точку входа — <strong>Fin Support Bot</strong> (договорится с Таней Альпакой). Два варианта реакции: (1) в учёте всё правильно, и так должно быть, (2) нужна доработка отчёта — тогда эскалация на ведущего.</p>
+    </div>
+
+    <h3 class="sub-title">Экономика юнитов и разрезы по лигам</h3>
+    <span class="speaker">Naus</span>
+    <div class="prose">
+      <p>Регулярный пользователь дашборда («Спасибо за дашборд. Я пользуюсь им каждый день, он сильно облегчил мне жизнь») спросил про частоту обновления и попросил представление экономики юнита по лигам с разделением на постоянные/переменные расходы и выручку — «широкий блок со всеми разворотами».</p>
+      <p>Ведущий предложил три пути:</p>
+      <ul class="roadmap">
+        <li>Поставить задачу в бэклог доработки отчёта.</li>
+        <li>Сделать самостоятельно вне Tableau — через Datalens (настраивается один раз) или через агента Claude по БДР, который может «рисовать бордики» под кастомные разрезы (нельзя шарить бордики за пределы пространства/команды в Claude).</li>
+        <li>Задать вопрос агенту в Sigma (боту), который отвечает на часть вопросов, «не идеально, но неплохо».</li>
+      </ul>
+      <p>Возникла дискуссия: Naus считал, что нужно отдельное представление для «безалокационного» взгляда на бизнес-юниты (без учёта внутригрупповых расчётов), ведущий возражал, что это можно получить фильтром прямо в существующем отчёте.</p>
+    </div>
+
+    <h3 class="sub-title">Доступ агента в Sigma</h3>
+    <span class="speaker">Hedge</span>
+    <div class="prose">
+      <p>Сергей уточнил, есть ли у Sigma-агента доступ к данным по умолчанию. Ответ: агент в Sigma работает по иерархии доступов, синхронизированной с доступами к ClickHouse; если доступа нет, агент сообщит об этом — «Обратись к Алсику» — после чего пользователь может обратиться за разбором причины.</p>
+    </div>
+
+    <h3 class="sub-title">Вкладка Compare Period</h3>
+    <div class="prose">
+      <p>На этой вкладке отображаются дельты между двумя произвольными периодами (например, июнь к маю или квартал к кварталу). На примере разбора роста Program-Office («почти в два раза больше на Program-Office») показана детализация по статьям бюджетирования, но без прямой ссылки на первичный документ — для этого нужно вернуться на вкладку PNL с тем же фильтром.</p>
+      <p><strong>Важный нюанс:</strong> фильтры с вкладки PNL могут «прокидываться» на Compare Period, поэтому рекомендуется всегда сверяться по контрольным цифрам (например, итоговой прибыли) или использовать кнопку сброса фильтров.</p>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <h2 class="section-title">Планы развития отчёта</h2>
+    <ul class="roadmap">
+      <li>Улучшение качества данных в ClickHouse для формирования разных видов отчётности, не только PNL.</li>
+      <li>Разработка отчёта по типу «Баланс» с разбивкой по юнитам — требует разметки первичных данных (например, договоров контрагентов по юнитам), которой сейчас нет; работа планируется в августе–сентябре, отчёт по балансу ожидается к октябрю (и продолжит дорабатываться).</li>
+      <li>Убрать неактуальное поле Allocation Stage (ранее — иерархическое распределение затрат до 7 уровней, сейчас всё скрыто в счетах).</li>
+    </ul>
+    <blockquote>
+      Как Exvider говорил, PnL и остальные виды отчётности очень связаны… а деньги в кармане могут либо не быть, либо быть, и они могут вообще не взаимосвязаны эти вещи.
+    </blockquote>
+
+    <h3 class="sub-title">Демонстрация агента в Sigma</h3>
+    <div class="prose">
+      <p>Ведущий показал вживую работу агента: задал вопрос про изменение прибыли (с 4 млн до 160 000), агент дал ответ с указанием на рост PPG и статьи. Агент — это текстовая инструкция, которая говорит модели, к каким таблицам ClickHouse обращаться и что там искать. VVVKamper отметил, что агент слишком многословен по умолчанию — ведущий подтвердил, что доработает инструкцию по итогам созвона.</p>
+    </div>
+
+    <h3 class="sub-title">Параллельный эксперимент: копия дашборда через AI-агента</h3>
+    <span class="speaker">VVVKamper</span>
+    <div class="prose">
+      <p>Во время созвона Рома параллельно скачал файл дашборда из Tableau и попросил AI-агента воссоздать аналогичный дашборд «по частям» — за ~40 минут получил таблицу и диаграмму с совпадающими цифрами. Продемонстрировал быструю работу даже с витриной из ~2,5 млн строк и десятков столбцов без предварительной агрегации, а также возможность на лету менять визуализацию (убрать выручку, пересчитать в рубли и т.д.).</p>
+      <p>Отметил, что подход воспроизводим другими пользователями, но требует преодоления технических барьеров; предложил провести отдельный воркшоп по Datalens или индивидуальную помощь. Отдельно обсудили ценность передачи агенту контекста о структуре данных — то же самое, что уже сделано для агента в Sigma: «Данные дать ему… это очень круто на самом деле, потому что раньше этого не было… И контекст, как это всё работает, тоже вот есть несколько мест».</p>
+    </div>
+  </section>
+
+  <section id="resources">
+    <h2 class="section-title">Упомянутые ресурсы</h2>
+    <div class="table-wrap">
+      <table class="resources">
+        <thead>
+          <tr>
+            <th>Инструмент / ресурс</th>
+            <th>Описание</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="term">Tableau</td><td>Платформа, на которой построен демонстрируемый отчёт по PNL</td></tr>
+          <tr><td class="term">ClickHouse</td><td>Хранилище данных, источник для отчёта в Tableau</td></tr>
+          <tr><td class="term">DB9</td><td>Учётная система-первоисточник, из которой данные попадают в ClickHouse</td></tr>
+          <tr><td class="term">DFS</td><td>Данные, заливаемые в ClickHouse вручную (в отличие от остальных, идущих из DB9)</td></tr>
+          <tr><td class="term">«Фиолетовый файлик»</td><td>Существующий Excel-файл/рассылка от финотдела, дублирующий логику отчёта</td></tr>
+          <tr><td class="term">Datalens</td><td>Альтернативный BI-инструмент для самостоятельного построения кастомных дашбордов</td></tr>
+          <tr><td class="term">Claude (агент по БДР)</td><td>ИИ-агент с доступом к ClickHouse, может строить кастомные визуализации («бордики»)</td></tr>
+          <tr><td class="term">Sigma (агент/бот)</td><td>Бот с доступом к ClickHouse по иерархии прав, отвечает на вопросы по финансовым данным</td></tr>
+          <tr><td class="term">Fin Support Bot</td><td>Планируемая единая точка входа для эскалации вопросов по отчёту (интеграция с Таней Альпакой)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>Конспект демо-созвона · 12 августа 2026</span>
+    <span>PnL в Tableau · MVP</span>
+  </footer>
+
+</div>
+</body>
+</html>
