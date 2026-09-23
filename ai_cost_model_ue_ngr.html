@@ -209,6 +209,16 @@ select:focus-visible{outline:2px solid var(--accent);}
 .subbar .field{gap:4px;}
 .subbar label{font-size:.78rem; color:var(--ink-muted); font-weight:600;}
 
+.period-note{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:.8rem;
+  color:var(--ink-muted);
+  margin-bottom:12px;
+}
+.period-note strong{color:var(--accent); font-weight:700;}
+
 .cards{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(190px,1fr));
@@ -377,6 +387,8 @@ tbody tr:hover{background:var(--surface-2);}
     </div>
   </div>
 
+  <div class="period-note" id="periodNote"></div>
+
   <div class="cards" id="summaryCards"></div>
 
   <div class="table-shell">
@@ -410,6 +422,8 @@ tbody tr:hover{background:var(--surface-2);}
     <strong>Как считается.</strong> Для каждой строки исходных данных (лист «ue slice», ~15 580 проводок) статья классифицируется как в исходной формуле <code>Статья</code>: «Затраты на МТ» — это статьи с <code>Item = braincost</code>, а «Выручка» дополнительно включает синтетическую строку <code>мт-услуги</code> (внутренний перевыставленный доход юнита aI&amp;data hub/brain). Обе эти статьи линейно масштабируются множителем <code>kk / 8%</code> — ровно как формула <code>=IF(G="braincost", J/0.08*kk, J)</code> в столбце L исходника. Статьи «Переменные» и «Прочие затраты», а также прочая выручка от параметра не зависят и совпадают со старым расчётом. Разбивка по месяцам и продуктам сделана из тех же построчных данных, без обращения к встроенной сводной таблице файла.
     <br><br>
     Порядок строк на вкладках «По юнитам» и «По продуктам» фиксированный (Deeprun → Franchise → NZT → Nous → OwnPlatforms → aI&amp;data hub, продукты — в порядке принадлежности к этим юнитам) и не зависит от рентабельности. На вкладке «По покерным сетям» сети, наоборот, отсортированы по рентабельности — от самых проблемных.
+    <br><br>
+    В селекторе месяца «Среднее за месяц» делит сумму за весь период на число месяцев в модели (сейчас 5), а не на число месяцев, где у разреза была активность — так среднее корректно учитывает и «пустые» месяцы конкретного разреза.
   </div>
 
 </div>
@@ -436,6 +450,12 @@ function addInto(dst, src){ for (let i=0;i<8;i++) dst[i]+=src[i]; }
 function monthsAgg(monthsObj, monthKey){
   const out = zero8();
   if (!monthsObj) return out;
+  if (monthKey === 'avg'){
+    for (const k in monthsObj) addInto(out, monthsObj[k]);
+    const n = MODEL.months.length || 1;
+    for (let i=0;i<8;i++) out[i] /= n;
+    return out;
+  }
   if (monthKey && monthKey !== 'all'){
     const m = monthsObj[monthKey];
     if (m) addInto(out, m);
@@ -547,6 +567,16 @@ function render(){
   const countFlip = fullRows.filter(r => r.status==='flip').length;
   const dimLabel = dim==='unit' ? 'юнитов' : dim==='product' ? 'продуктов' : 'покерных сетей';
 
+  const periodNote = document.getElementById('periodNote');
+  if (state.month === 'avg'){
+    periodNote.innerHTML = `Период: <strong>в среднем за месяц</strong> (сумма за ${MODEL.months.length} мес. ÷ ${MODEL.months.length} — суммы в таблице ниже это среднемесячные значения, не итог за период)`;
+  } else if (state.month === 'all' || !state.month){
+    periodNote.innerHTML = `Период: <strong>итог за все ${MODEL.months.length} мес.</strong> (${MODEL.months[0].label} – ${MODEL.months[MODEL.months.length-1].label})`;
+  } else {
+    const m = MODEL.months.find(mm => mm.key === state.month);
+    periodNote.innerHTML = `Период: <strong>${m ? m.label : state.month}</strong>`;
+  }
+
   const cards = document.getElementById('summaryCards');
   cards.innerHTML = `
     <div class="card ${countBad>0?'flag':''}">
@@ -614,6 +644,10 @@ function syncKkInputs(){
 
 function populateMonthSelect(){
   const sel = document.getElementById('monthSelect');
+  const avgOpt = document.createElement('option');
+  avgOpt.value = 'avg';
+  avgOpt.textContent = `Среднее за месяц (${MODEL.months.length} мес.)`;
+  sel.appendChild(avgOpt);
   MODEL.months.forEach(m => {
     const opt = document.createElement('option');
     opt.value = m.key;
