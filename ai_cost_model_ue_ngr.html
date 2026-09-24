@@ -264,7 +264,7 @@ thead th{
   text-transform:uppercase;
   letter-spacing:.04em;
   color:var(--ink-muted);
-  padding:8px 5px;
+  padding:8px 4px;
   border-bottom:1px solid var(--border);
   white-space:nowrap;
 }
@@ -274,7 +274,7 @@ th.sortable:hover{color:var(--ink);}
 th.sortable.sort-active{color:var(--accent);}
 th .sort-ind{display:inline-block; width:.9em; font-size:.75em; color:var(--accent);}
 tbody td{
-  padding:7px 5px;
+  padding:7px 4px;
   border-bottom:1px solid var(--border);
   font-size:.78rem;
   white-space:nowrap;
@@ -285,8 +285,8 @@ tbody tr:hover{background:var(--surface-2);}
 .col-excluded{opacity:.4; text-decoration:line-through; text-decoration-color:var(--ink-faint);}
 .old-val{color:var(--ink-faint); font-size:.82em;}
 .pct-clip{display:inline-block; max-width:68px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; cursor:default;}
-.clip-name{display:inline-block; max-width:82px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; cursor:default;}
-td.mono .clip-name{max-width:64px;}
+.clip-name{display:inline-block; max-width:98px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; cursor:default;}
+td.mono .clip-name{max-width:78px;}
 .badge{
   display:inline-flex; align-items:center; gap:4px;
   padding:2px 7px; border-radius:999px;
@@ -414,9 +414,9 @@ tr.total-row .old-val{font-weight:500;}
       <div class="field check-field">
         <label><input type="checkbox" id="topNEnabled"> Показать только топ</label>
       </div>
-      <div class="field" style="flex:0 0 90px;">
+      <div class="field" style="flex:0 0 110px;">
         <label for="topNCount">Кол-во строк</label>
-        <input type="number" id="topNCount" class="kk-num tabular" min="3" max="10" step="1" value="5" style="width:5ch;">
+        <input type="number" id="topNCount" class="kk-num tabular" min="1" step="1" value="5" style="width:7ch;">
       </div>
       <div class="field">
         <label>по метрике</label>
@@ -441,7 +441,6 @@ tr.total-row .old-val{font-weight:500;}
             <th class="sortable net-col" data-col="products" id="thProducts"><span class="th-label">Продукт</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="rev" title="Выручка, k$"><span class="th-label">Выручка</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="mt" title="Затраты на МТ, k$"><span class="th-label">МТ</span><span class="sort-ind"></span></th>
-            <th class="num sortable net-col" data-col="ngr" title="NGR — расчётная база: |Затраты на МТ при NGR=8%| / 8%. Не зависит от текущего значения kk"><span class="th-label">NGR</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="va" title="Переменные затраты, k$"><span class="th-label">Перем.</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="gp" title="Gross Profit = Выручка − МТ − Переменные, k$"><span class="th-label">GP</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="marginGP" title="Margin GP = Gross Profit / Выручка"><span class="th-label">Margin GP</span><span class="sort-ind"></span></th>
@@ -451,6 +450,7 @@ tr.total-row .old-val{font-weight:500;}
             <th title="Статус при текущем пороге и параметре kk">Статус</th>
             <th class="num sortable net-col" data-col="mt0Profit" id="thMt0" title="Прибыль сети, если бы затраты на МТ были равны нулю"><span class="th-label">МТ=0</span><span class="sort-ind"></span></th>
             <th class="num sortable net-col" data-col="mtBeProfit" id="thMtBe" title="Прибыль сети при затратах на МТ, посчитанных по kk, где прибыль aI&data hub = 0"><span class="th-label">МТ=точка нуля</span><span class="sort-ind"></span></th>
+            <th class="num sortable net-col" data-col="ngr" title="NGR — расчётная база: |Затраты на МТ при NGR=8%| / 8%. Не зависит от текущего значения kk"><span class="th-label">NGR</span><span class="sort-ind"></span></th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -486,7 +486,7 @@ const MODEL = {"baseline_kk":0.08,"current_kk":0.13,"months":[{"key":"2026-04","
 
 const CUSTOM_ORDER_UNIT = ['deeprun','franchise','nzt','nous','ownplatforms','aI&data hub'];
 const CUSTOM_ORDER_PRODUCT = ['botsinternal','bigeco','bots','botsexternal','goldenexternal','nzt','goldennzt','nous','ecoownplatform','brain'];
-const ALL_PRODUCT_NAMES = MODEL.product.map(p => p.name);
+const ALL_PRODUCT_NAMES = MODEL.product.map(p => p.name).filter(n => n !== 'brain');
 
 function zero8(){ return [0,0,0,0,0,0,0,0]; }
 function addInto(dst, src){ for (let i=0;i<8;i++) dst[i]+=src[i]; }
@@ -701,7 +701,6 @@ function renderTotalsRow(rows, dim, fixedExcluded, threshFrac){
   if (dim === 'network') cells.push(`<td></td>`);
   cells.push(`<td class="num mono">${fmtMoney(t.rev)}<div class="old-val tabular">${fmtMoney(t.revOld)}</div></td>`);
   cells.push(`<td class="num mono">${fmtMoney(t.mt)}<div class="old-val tabular">${fmtMoney(t.mtOld)}</div></td>`);
-  if (dim === 'network') cells.push(`<td class="num mono">${fmtMoney(t.ngr)}</td>`);
   cells.push(`<td class="num mono">${fmtMoney(t.va)}</td>`);
   cells.push(`<td class="num mono">${fmtMoney(t.gp)}<div class="old-val tabular">${fmtMoney(t.gpOld)}</div></td>`);
   cells.push(`<td class="num mono">${fmtPctClip(t.marginGP)}<div class="old-val tabular">${fmtPctClip(t.marginGPOld)}</div></td>`);
@@ -712,6 +711,7 @@ function renderTotalsRow(rows, dim, fixedExcluded, threshFrac){
   if (dim === 'network'){
     cells.push(`<td class="num mono">${fmtMoney(t.mt0Profit)}</td>`);
     cells.push(`<td class="num mono">${t.mtBeProfit===null?'—':fmtMoney(t.mtBeProfit)}</td>`);
+    cells.push(`<td class="num mono">${fmtMoney(t.ngr)}</td>`);
   }
   return `<tr class="total-row">${cells.join('')}</tr>`;
 }
@@ -795,7 +795,6 @@ function render(){
       if (dim === 'network') cells.push(`<td class="mono"><span class="clip-name" title="${escapeHtml(r.product)}">${escapeHtml(r.product)}</span></td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.rev)}<div class="old-val tabular">${fmtMoney(r.old.rev)}</div></td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.mt)}<div class="old-val tabular">${fmtMoney(r.old.mt)}</div></td>`);
-      if (dim === 'network') cells.push(`<td class="num mono">${fmtMoney(r.ngr)}</td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.va)}</td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.gp)}<div class="old-val tabular">${fmtMoney(r.old.gp)}</div></td>`);
       cells.push(`<td class="num mono">${fmtPctClip(r.new.marginGP)}<div class="old-val tabular">${fmtPctClip(r.old.marginGP)}</div></td>`);
@@ -814,6 +813,7 @@ function render(){
       if (dim === 'network'){
         cells.push(`<td class="num mono">${fmtMoney(r.mt0Profit)}</td>`);
         cells.push(`<td class="num mono">${r.mtBeProfit===null?'—':fmtMoney(r.mtBeProfit)}</td>`);
+        cells.push(`<td class="num mono">${fmtMoney(r.ngr)}</td>`);
       }
       return `<tr>${cells.join('')}</tr>`;
     }).join('');
@@ -945,7 +945,7 @@ document.getElementById('topNEnabled').addEventListener('change', e => {
 document.getElementById('topNCount').addEventListener('input', e => {
   let v = parseInt(e.target.value, 10);
   if (isNaN(v)) return;
-  v = Math.max(3, Math.min(10, v));
+  v = Math.max(1, v);
   state.topN.count = v;
   render();
 });
