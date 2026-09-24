@@ -79,7 +79,7 @@ body{
   padding-block: 20px 40px;
   line-height:1.45;
 }
-.wrap{max-width:1180px;margin:0 auto;}
+.wrap{max-width:1320px;margin:0 auto;}
 h1,h2,h3{font-family:"Fraunces", Georgia, serif; font-weight:600; letter-spacing:-.01em; text-wrap:balance; margin:0;}
 .tabular{font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1;}
 .mono{font-family:"IBM Plex Mono", ui-monospace, monospace;}
@@ -114,7 +114,7 @@ select{
   cursor:pointer;
 }
 select:focus-visible{outline:2px solid var(--accent);}
-.kk-control{flex:1 1 320px; display:flex; flex-direction:column; gap:8px;}
+.kk-control{flex:1 1 340px; display:flex; flex-direction:column; gap:8px;}
 .kk-row{display:flex; align-items:center; gap:12px;}
 .kk-row input[type=range]{
   flex:1;
@@ -127,11 +127,11 @@ select:focus-visible{outline:2px solid var(--accent);}
   font-weight:600;
   font-size:1.7rem;
   color:var(--accent);
-  min-width:4.4ch;
+  min-width:6ch;
   text-align:right;
 }
 .kk-num{
-  width:5.2ch;
+  width:7.5ch;
   border:1px solid var(--border-strong);
   border-radius:8px;
   background:var(--surface-2);
@@ -161,17 +161,6 @@ select:focus-visible{outline:2px solid var(--accent);}
 .thresh-row input[type=range]{flex:1; accent-color:var(--warn); height:6px; cursor:pointer;}
 .thresh-value{font-family:"IBM Plex Mono"; font-weight:600; min-width:5ch; text-align:right;}
 
-.search-field input{
-  border:1px solid var(--border-strong);
-  border-radius:8px;
-  background:var(--surface-2);
-  color:var(--ink);
-  padding:7px 10px;
-  font:inherit;
-  min-width:200px;
-}
-.search-field input:focus-visible{outline:2px solid var(--accent);}
-
 .check-field{flex-direction:row; align-items:center; gap:8px;}
 .check-field label{font-weight:500; color:var(--ink); display:flex; align-items:center; gap:8px; cursor:pointer;}
 .check-field input{accent-color:var(--accent); width:16px; height:16px; cursor:pointer;}
@@ -199,8 +188,8 @@ select:focus-visible{outline:2px solid var(--accent);}
 .tab:focus-visible{outline:2px solid var(--accent);}
 
 .subbar{
-  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
-  padding:12px 16px;
+  display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;
+  padding:14px 16px;
   background:var(--accent-soft);
   border:1px solid var(--border);
   border-radius:12px;
@@ -208,6 +197,21 @@ select:focus-visible{outline:2px solid var(--accent);}
 }
 .subbar .field{gap:4px;}
 .subbar label{font-size:.78rem; color:var(--ink-muted); font-weight:600;}
+
+.product-checks{display:flex; flex-wrap:wrap; gap:6px; max-width:520px;}
+.chip-check{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:.78rem; font-weight:500; color:var(--ink);
+  background:var(--surface); border:1px solid var(--border-strong);
+  border-radius:999px; padding:4px 10px 4px 8px; cursor:pointer;
+  white-space:nowrap;
+}
+.chip-check input{accent-color:var(--accent); width:14px; height:14px; cursor:pointer;}
+.chip-check.master{font-weight:700; background:var(--surface-2);}
+
+.radio-row{display:flex; gap:14px; align-items:center;}
+.radio-row label{display:flex; align-items:center; gap:5px; font-weight:500; color:var(--ink); cursor:pointer; font-size:.88rem;}
+.radio-row input{accent-color:var(--accent); cursor:pointer;}
 
 .period-note{
   display:inline-flex;
@@ -249,7 +253,7 @@ select:focus-visible{outline:2px solid var(--accent);}
   overflow:hidden;
 }
 .table-scroll{overflow-x:auto;}
-table{border-collapse:collapse; width:100%; min-width:900px;}
+table{border-collapse:collapse; width:100%; min-width:1300px;}
 thead th{
   position:sticky; top:0;
   background:var(--surface-2);
@@ -304,6 +308,14 @@ tbody tr:hover{background:var(--surface-2);}
 .margin-bar.new.good{background:var(--good);}
 .margin-bar.new.bad{background:var(--bad);}
 
+tr.total-row td{
+  border-top:2px solid var(--border-strong);
+  border-bottom:none;
+  background:var(--surface-2);
+  font-weight:700;
+}
+tr.total-row .old-val{font-weight:500;}
+
 .empty{padding:32px; text-align:center; color:var(--ink-muted);}
 
 .foot{
@@ -347,13 +359,14 @@ tbody tr:hover{background:var(--surface-2);}
       <div class="kk-control">
         <label for="kkSlider">Параметр «новый NGR» (kk, ячейка L1)</label>
         <div class="kk-row">
-          <input type="range" id="kkSlider" min="0" max="30" step="0.25" value="13">
+          <input type="range" id="kkSlider" min="0" max="30" step="0.1" value="13">
           <span class="kk-value tabular" id="kkValue">13,0%</span>
-          <input type="number" id="kkNum" class="kk-num tabular" min="0" max="30" step="0.25" value="13">
+          <input type="number" id="kkNum" class="kk-num tabular" min="0" max="30" step="0.1" value="13">
         </div>
         <div class="presets">
           <button class="btn" id="presetBase" data-kk="8">База 8%</button>
           <button class="btn" id="presetCurrent" data-kk="13">Текущий в файле — 13%</button>
+          <button class="btn" id="presetBreakeven" hidden>Ноль прибыли aI&data hub</button>
           <button class="btn" id="presetReset">Сброс</button>
         </div>
       </div>
@@ -364,11 +377,6 @@ tbody tr:hover{background:var(--surface-2);}
           <input type="range" id="threshSlider" min="-20" max="30" step="1" value="0">
           <span class="thresh-value tabular" id="threshValue">≥ 0%</span>
         </div>
-      </div>
-
-      <div class="field search-field">
-        <label for="searchInput">Поиск по разрезу</label>
-        <input type="text" id="searchInput" placeholder="например, WEPOKER">
       </div>
 
       <div class="field check-field">
@@ -385,13 +393,29 @@ tbody tr:hover{background:var(--surface-2);}
 
   <div class="subbar" id="productFilterRow" hidden>
     <div class="field">
-      <label for="productSelect">Продукт (для разреза по сетям)</label>
-      <select id="productSelect">
-        <option value="all">Все продукты</option>
-      </select>
+      <label>Продукт (для разреза по сетям)</label>
+      <div class="product-checks" id="productChecks">
+        <label class="chip-check master"><input type="checkbox" id="productAll" checked> Все</label>
+      </div>
     </div>
+
     <div class="field check-field">
       <label><input type="checkbox" id="excludeFixed"> Исключить постоянные затраты (Прочие) из прибыли</label>
+    </div>
+
+    <div class="field check-field">
+      <label><input type="checkbox" id="topNEnabled"> Показать только топ</label>
+    </div>
+    <div class="field" style="flex:0 0 80px;">
+      <label for="topNCount">Кол-во сетей</label>
+      <input type="number" id="topNCount" class="kk-num tabular" min="3" max="10" step="1" value="5" style="width:5ch;">
+    </div>
+    <div class="field">
+      <label>по метрике</label>
+      <div class="radio-row">
+        <label><input type="radio" name="topNMetric" value="rev" checked> Выручка</label>
+        <label><input type="radio" name="topNMetric" value="profit"> Прибыль</label>
+      </div>
     </div>
   </div>
 
@@ -405,19 +429,24 @@ tbody tr:hover{background:var(--surface-2);}
         <thead>
           <tr>
             <th class="sortable" data-col="name"><span class="th-label">Разрез</span><span class="sort-ind"></span></th>
+            <th class="sortable net-col" data-col="products" id="thProducts"><span class="th-label">Продукт</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="rev"><span class="th-label">Выручка, k$</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="mt"><span class="th-label">Затраты на МТ, k$</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="va"><span class="th-label">Переменные, k$</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="gp"><span class="th-label">Gross Profit, k$</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="marginGP"><span class="th-label">Margin GP</span><span class="sort-ind"></span></th>
             <th class="num sortable" id="thOther" data-col="ot"><span class="th-label">Прочие, k$</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="profit"><span class="th-label">Прибыль, k$</span><span class="sort-ind"></span></th>
             <th class="margin-cell sortable" data-col="margin"><span class="th-label">Рентабельность (8% → новый)</span><span class="sort-ind"></span></th>
             <th>Статус</th>
+            <th class="num sortable net-col" data-col="mt0Profit" id="thMt0"><span class="th-label">Прибыль, МТ=0</span><span class="sort-ind"></span></th>
+            <th class="num sortable net-col" data-col="mtBeProfit" id="thMtBe"><span class="th-label">Прибыль, МТ=точка нуля</span><span class="sort-ind"></span></th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
-    <div id="emptyState" class="empty" hidden>Ничего не найдено по этому запросу.</div>
+    <div id="emptyState" class="empty" hidden>Нет строк, соответствующих текущим фильтрам.</div>
   </div>
 
   <div class="legend">
@@ -427,15 +456,17 @@ tbody tr:hover{background:var(--surface-2);}
   </div>
 
   <div class="foot">
-    <strong>Как считается.</strong> Для каждой строки исходных данных (лист «ue slice», ~15 580 проводок) статья классифицируется как в исходной формуле <code>Статья</code>: «Затраты на МТ» — это статьи с <code>Item = braincost</code>, а «Выручка» дополнительно включает синтетическую строку <code>мт-услуги</code> (внутренний перевыставленный доход юнита aI&amp;data hub/brain). Обе эти статьи линейно масштабируются множителем <code>kk / 8%</code> — ровно как формула <code>=IF(G="braincost", J/0.08*kk, J)</code> в столбце L исходника. Статьи «Переменные» и «Прочие затраты», а также прочая выручка от параметра не зависят и совпадают со старым расчётом. Разбивка по месяцам и продуктам сделана из тех же построчных данных, без обращения к встроенной сводной таблице файла.
+    <strong>Как считается.</strong> Для каждой строки исходных данных (лист «ue slice», ~15 580 проводок) статья классифицируется как в исходной формуле <code>Статья</code>: «Затраты на МТ» — это статьи с <code>Item = braincost</code>, а «Выручка» дополнительно включает синтетическую строку <code>мт-услуги</code> (внутренний перевыставленный доход юнита aI&amp;data hub/brain). Обе эти статьи линейно масштабируются множителем <code>kk / 8%</code> — ровно как формула <code>=IF(G="braincost", J/0.08*kk, J)</code> в столбце L исходника. Статьи «Переменные» и «Прочие затраты», а также прочая выручка от параметра не зависят и совпадают со старым расчётом.
     <br><br>
-    Порядок строк на вкладках «По юнитам» и «По продуктам» фиксированный (Deeprun → Franchise → NZT → Nous → OwnPlatforms → aI&amp;data hub, продукты — в порядке принадлежности к этим юнитам) и не зависит от рентабельности. На вкладке «По покерным сетям» сети, наоборот, отсортированы по рентабельности — от самых проблемных.
+    <strong>Gross Profit</strong> = Выручка − Затраты на МТ − Переменные (то есть прибыль без учёта постоянных затрат); <strong>Margin GP</strong> = Gross Profit / Выручка. Эти два столбца показаны на всех вкладках независимо от галочки «Исключить постоянные затраты» (которая влияет только на основной столбец «Прибыль»/«Рентабельность» на вкладке по сетям).
     <br><br>
-    В селекторе месяца «Среднее за месяц» делит сумму за весь период на число месяцев в модели (сейчас 5), а не на число месяцев, где у разреза была активность — так среднее корректно учитывает и «пустые» месяцы конкретного разреза.
+    Строка <strong>«Итого»</strong> внизу таблицы — это сумма показанных строк (с учётом всех активных фильтров), а рентабельность и Margin GP в ней пересчитаны из сумм (прибыль ÷ выручка), а не как среднее по строкам.
     <br><br>
-    На вкладке «По покерным сетям» галочка «Исключить постоянные затраты» убирает статью «Прочие» (это статьи ItemGroup=«постоянные», кроме braincost) из прибыли и рентабельности — остаются выручка, затраты на МТ и переменные затраты. Сама сумма «Прочие» в таблице продолжает отображаться (перечёркнутой), просто не участвует в расчёте.
+    Порядок строк на вкладках «По юнитам» и «По продуктам» фиксированный (Deeprun → Franchise → NZT → Nous → OwnPlatforms → aI&amp;data hub, продукты — в порядке принадлежности к этим юнитам) и не зависит от рентабельности, пока не включена сортировка по клику на заголовок столбца. На вкладке «По покерным сетям» сети по умолчанию отсортированы по рентабельности — от самых проблемных.
     <br><br>
-    Заголовки столбцов таблицы кликабельны: клик сортирует по столбцу (по возрастанию → по убыванию → назад к порядку по умолчанию — фиксированному на вкладках «По юнитам»/«По продуктам» и по рентабельности на «По покерным сетям»).
+    В селекторе месяца «Среднее за месяц» делит сумму за весь период на число месяцев в модели (сейчас 5), а не на число месяцев, где у разреза была активность.
+    <br><br>
+    На вкладке «По покерным сетям»: юнит aI&amp;data hub/brain убран из списка — это внутренний cost-center, а не поле «сеть», и разбивки по продукту/сети для него нет. Кнопка «Ноль прибыли aI&amp;data hub» ставит параметр kk в точку, где прибыль этого юнита равна нулю (при текущих данных — около 3,4%); от неё же считаются два дополнительных столбца в конце таблицы — гипотетическая прибыль сети, если бы «Затраты на МТ» были равны 0, и если бы они считались по этому нулевому для aI&amp;data hub значению kk (остальные статьи при этом берутся как сейчас, без изменений). Фильтр «Продукт» стал множественным (чекбоксы), а «Показать только топ» ограничивает список N сетями с наибольшей выручкой или прибылью (после всех остальных фильтров, до сортировки по клику на столбец).
   </div>
 
 </div>
@@ -445,19 +476,7 @@ const MODEL = {"baseline_kk":0.08,"current_kk":0.13,"months":[{"key":"2026-04","
 
 const CUSTOM_ORDER_UNIT = ['deeprun','franchise','nzt','nous','ownplatforms','aI&data hub'];
 const CUSTOM_ORDER_PRODUCT = ['botsinternal','bigeco','bots','botsexternal','goldenexternal','nzt','goldennzt','nous','ecoownplatform','brain'];
-
-const state = {
-  dim: 'unit',
-  kk: MODEL.current_kk * 100,
-  thresh: 0,
-  search: '',
-  onlyIneff: false,
-  month: 'all',
-  product: 'all',
-  excludeFixed: false,
-  sortCol: null,
-  sortDir: 'asc',
-};
+const ALL_PRODUCT_NAMES = MODEL.product.map(p => p.name);
 
 function zero8(){ return [0,0,0,0,0,0,0,0]; }
 function addInto(dst, src){ for (let i=0;i<8;i++) dst[i]+=src[i]; }
@@ -480,19 +499,43 @@ function monthsAgg(monthsObj, monthKey){
   return out;
 }
 
-function networkAgg(net, productKey, monthKey){
+function computeBreakevenKk(){
+  const hub = MODEL.unit.find(u => u.name === 'aI&data hub');
+  if (!hub) return null;
+  const agg = monthsAgg(hub.months, 'all');
+  const revScaled = agg[1];
+  const otherFixed = agg[6];
+  if (!revScaled) return null;
+  return MODEL.baseline_kk * (-otherFixed / revScaled) * 100;
+}
+const rawBreakevenKk = computeBreakevenKk();
+const BREAKEVEN_KK = rawBreakevenKk !== null ? Math.round(rawBreakevenKk * 10) / 10 : null;
+
+const state = {
+  dim: 'unit',
+  kk: MODEL.current_kk * 100,
+  thresh: 0,
+  onlyIneff: false,
+  month: 'all',
+  selectedProducts: new Set(ALL_PRODUCT_NAMES),
+  excludeFixed: false,
+  sortCol: null,
+  sortDir: 'asc',
+  topN: { enabled: false, count: 5, metric: 'rev' },
+};
+
+function networkAgg(net, productSet, monthKey){
   const out = zero8();
-  const prods = net.products;
-  for (const pname in prods){
-    if (productKey && productKey !== 'all' && pname !== productKey) continue;
-    addInto(out, monthsAgg(prods[pname], monthKey));
+  for (const pname in net.products){
+    if (!productSet.has(pname)) continue;
+    addInto(out, monthsAgg(net.products[pname], monthKey));
   }
   return out;
 }
 
-function networkParticipates(net, productKey){
-  if (!productKey || productKey === 'all') return true;
-  return Object.prototype.hasOwnProperty.call(net.products, productKey);
+function networkParticipates(net, productSet){
+  for (const pname in net.products){ if (productSet.has(pname)) return true; }
+  return false;
 }
 
 function computeRow(agg8, kkPct, includeFixed){
@@ -503,9 +546,11 @@ function computeRow(agg8, kkPct, includeFixed){
   const mt  = agg8[2] + agg8[3]*ratio;
   const va  = agg8[4] + agg8[5]*ratio;
   const ot  = agg8[6] + agg8[7]*ratio;
-  const profit = rev+mt+va+(includeFixed ? ot : 0);
+  const gp = rev + mt + va;
+  const marginGP = Math.abs(rev) > 0.05 ? gp/rev : null;
+  const profit = gp + (includeFixed ? ot : 0);
   const margin = Math.abs(rev) > 0.05 ? profit/rev : null;
-  return {rev, mt, va, ot, profit, margin};
+  return {rev, mt, va, ot, gp, marginGP, profit, margin};
 }
 
 function fmtMoney(v){
@@ -533,14 +578,14 @@ function buildRows(){
   const threshFrac = state.thresh/100;
   let list;
   if (dim === 'network'){
-    list = MODEL.network.filter(n => networkParticipates(n, state.product));
+    list = MODEL.network.filter(n => n.name !== '-' && networkParticipates(n, state.selectedProducts));
   } else {
     list = dim === 'unit' ? MODEL.unit : MODEL.product;
   }
   const includeFixed = dim === 'network' ? !state.excludeFixed : true;
   return list.map(item => {
     const agg = dim === 'network'
-      ? networkAgg(item, state.product, state.month)
+      ? networkAgg(item, state.selectedProducts, state.month)
       : monthsAgg(item.months, state.month);
     const oldR = computeRow(agg, MODEL.baseline_kk*100, includeFixed);
     const newR = computeRow(agg, state.kk, includeFixed);
@@ -551,13 +596,23 @@ function buildRows(){
     else if (effOld && !effNew) status = 'flip';
     else if (!effNew) status = 'bad';
     else status = 'good';
-    return {name: item.name, old: oldR, new: newR, status};
+    const row = {name: item.name, old: oldR, new: newR, status};
+    if (dim === 'network'){
+      const prodList = Object.keys(item.products).filter(p => state.selectedProducts.has(p));
+      row.productsLabel = prodList.length ? prodList.join(', ') : '—';
+      row.mt0Profit = computeRow(agg, 0, includeFixed).profit;
+      row.mtBeProfit = BREAKEVEN_KK !== null ? computeRow(agg, BREAKEVEN_KK, includeFixed).profit : null;
+    }
+    return row;
   });
 }
 
 function getSortValue(r, col){
   if (col === 'name') return r.name;
-  if (col === 'margin') return r.new.margin === null ? -Infinity : r.new.margin;
+  if (col === 'products') return r.productsLabel || '';
+  if (col === 'mt0Profit') return r.mt0Profit;
+  if (col === 'mtBeProfit') return r.mtBeProfit === null ? -Infinity : r.mtBeProfit;
+  if (col === 'margin' || col === 'marginGP') return r.new[col] === null ? -Infinity : r.new[col];
   return r.new[col];
 }
 
@@ -601,7 +656,7 @@ function updateSortIndicators(){
 }
 
 function escapeHtml(s){
-  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 const NETWORK_DISPLAY_NAME = {
@@ -612,21 +667,72 @@ function displayName(name, dim){
   return name;
 }
 
+function computeTotalsRow(rows, dim){
+  const sumNew = key => rows.reduce((s,r)=>s+(r.new[key]||0),0);
+  const sumOld = key => rows.reduce((s,r)=>s+(r.old[key]||0),0);
+  const rev=sumNew('rev'), mt=sumNew('mt'), va=sumNew('va'), ot=sumNew('ot'), gp=sumNew('gp'), profit=sumNew('profit');
+  const revOld=sumOld('rev'), mtOld=sumOld('mt'), profitOld=sumOld('profit'), gpOld=sumOld('gp');
+  const margin = Math.abs(rev)>0.05 ? profit/rev : null;
+  const marginOld = Math.abs(revOld)>0.05 ? profitOld/revOld : null;
+  const marginGP = Math.abs(rev)>0.05 ? gp/rev : null;
+  const marginGPOld = Math.abs(revOld)>0.05 ? gpOld/revOld : null;
+  const out = {rev,mt,va,ot,gp,profit,margin,marginGP,revOld,mtOld,profitOld,gpOld,marginOld,marginGPOld, mt0Profit:null, mtBeProfit:null};
+  if (dim === 'network'){
+    out.mt0Profit = rows.reduce((s,r)=>s+(r.mt0Profit||0),0);
+    out.mtBeProfit = rows.some(r=>r.mtBeProfit===null) ? null : rows.reduce((s,r)=>s+(r.mtBeProfit||0),0);
+  }
+  return out;
+}
+
+function renderTotalsRow(rows, dim, fixedExcluded, threshFrac){
+  if (rows.length === 0) return '';
+  const t = computeTotalsRow(rows, dim);
+  const goodClass = (t.margin !== null && t.margin >= threshFrac) ? 'good' : 'bad';
+  const cells = [];
+  cells.push(`<td class="seg-name">Итого (${rows.length})</td>`);
+  if (dim === 'network') cells.push(`<td></td>`);
+  cells.push(`<td class="num mono">${fmtMoney(t.rev)}<div class="old-val tabular">${fmtMoney(t.revOld)}</div></td>`);
+  cells.push(`<td class="num mono">${fmtMoney(t.mt)}<div class="old-val tabular">${fmtMoney(t.mtOld)}</div></td>`);
+  cells.push(`<td class="num mono">${fmtMoney(t.va)}</td>`);
+  cells.push(`<td class="num mono">${fmtMoney(t.gp)}<div class="old-val tabular">${fmtMoney(t.gpOld)}</div></td>`);
+  cells.push(`<td class="num mono">${fmtPct(t.marginGP)}<div class="old-val tabular">${fmtPct(t.marginGPOld)}</div></td>`);
+  cells.push(`<td class="num mono${fixedExcluded ? ' col-excluded' : ''}">${fmtMoney(t.ot)}</td>`);
+  cells.push(`<td class="num mono">${fmtMoney(t.profit)}<div class="old-val tabular">${fmtMoney(t.profitOld)}</div></td>`);
+  cells.push(`<td class="num mono"><span style="color:var(--${goodClass})">${fmtPct(t.margin)}</span><div class="old-val tabular">${fmtPct(t.marginOld)}</div></td>`);
+  cells.push(`<td></td>`);
+  if (dim === 'network'){
+    cells.push(`<td class="num mono">${fmtMoney(t.mt0Profit)}</td>`);
+    cells.push(`<td class="num mono">${t.mtBeProfit===null?'—':fmtMoney(t.mtBeProfit)}</td>`);
+  }
+  return `<tr class="total-row">${cells.join('')}</tr>`;
+}
+
 function render(){
   const dim = state.dim;
   const threshFrac = state.thresh/100;
-  const q = state.search.trim().toLowerCase();
 
-  const fullRows = buildRows();
+  let fullRows = buildRows();
+
+  if (dim === 'network' && state.topN.enabled){
+    const metric = state.topN.metric;
+    fullRows = fullRows.slice().sort((a,b) => b.new[metric] - a.new[metric]).slice(0, state.topN.count);
+  }
 
   const countBad = fullRows.filter(r => r.status==='bad' || r.status==='flip').length;
   const countFlip = fullRows.filter(r => r.status==='flip').length;
   const dimLabel = dim==='unit' ? 'юнитов' : dim==='product' ? 'продуктов' : 'покерных сетей';
   const fixedExcluded = dim === 'network' && state.excludeFixed;
 
+  document.querySelectorAll('.net-col').forEach(el => { el.hidden = dim !== 'network'; });
+
   const thOther = document.getElementById('thOther');
   thOther.querySelector('.th-label').textContent = fixedExcluded ? 'Прочие, k$ (искл. из прибыли)' : 'Прочие, k$';
   thOther.classList.toggle('col-excluded', fixedExcluded);
+
+  const thMtBe = document.getElementById('thMtBe');
+  thMtBe.querySelector('.th-label').textContent = BREAKEVEN_KK !== null
+    ? `Прибыль, МТ=${BREAKEVEN_KK.toFixed(1).replace('.', ',')}%`
+    : 'Прибыль, МТ=точка нуля';
 
   const periodNote = document.getElementById('periodNote');
   if (state.month === 'avg'){
@@ -652,7 +758,6 @@ function render(){
   `;
 
   let rows = fullRows;
-  if (q) rows = rows.filter(r => r.name.toLowerCase().includes(q));
   if (state.onlyIneff) rows = rows.filter(r => r.status==='bad' || r.status==='flip');
   rows = rows.slice();
   sortRows(rows, dim);
@@ -665,7 +770,7 @@ function render(){
     emptyState.hidden = false;
   } else {
     emptyState.hidden = true;
-    tbody.innerHTML = rows.map(r => {
+    const bodyHtml = rows.map(r => {
       const oldStyle = marginBarStyle(r.old.margin);
       const newStyle = marginBarStyle(r.new.margin);
       const newGoodClass = (r.new.margin !== null && r.new.margin >= threshFrac) ? 'good' : 'bad';
@@ -674,14 +779,18 @@ function render(){
       else if (r.status==='bad') badge = '<span class="badge bad">неэффективно</span>';
       else if (r.status==='na') badge = '<span class="badge na">нет выручки</span>';
       else badge = '<span class="badge good">эффективно</span>';
-      return `<tr>
-        <td class="seg-name">${escapeHtml(displayName(r.name, dim))}</td>
-        <td class="num mono">${fmtMoney(r.new.rev)}<div class="old-val tabular">${fmtMoney(r.old.rev)}</div></td>
-        <td class="num mono">${fmtMoney(r.new.mt)}<div class="old-val tabular">${fmtMoney(r.old.mt)}</div></td>
-        <td class="num mono">${fmtMoney(r.new.va)}</td>
-        <td class="num mono${fixedExcluded ? ' col-excluded' : ''}">${fmtMoney(r.new.ot)}</td>
-        <td class="num mono">${fmtMoney(r.new.profit)}<div class="old-val tabular">${fmtMoney(r.old.profit)}</div></td>
-        <td class="margin-cell">
+
+      const cells = [];
+      cells.push(`<td class="seg-name">${escapeHtml(displayName(r.name, dim))}</td>`);
+      if (dim === 'network') cells.push(`<td class="mono">${escapeHtml(r.productsLabel)}</td>`);
+      cells.push(`<td class="num mono">${fmtMoney(r.new.rev)}<div class="old-val tabular">${fmtMoney(r.old.rev)}</div></td>`);
+      cells.push(`<td class="num mono">${fmtMoney(r.new.mt)}<div class="old-val tabular">${fmtMoney(r.old.mt)}</div></td>`);
+      cells.push(`<td class="num mono">${fmtMoney(r.new.va)}</td>`);
+      cells.push(`<td class="num mono">${fmtMoney(r.new.gp)}<div class="old-val tabular">${fmtMoney(r.old.gp)}</div></td>`);
+      cells.push(`<td class="num mono">${fmtPct(r.new.marginGP)}<div class="old-val tabular">${fmtPct(r.old.marginGP)}</div></td>`);
+      cells.push(`<td class="num mono${fixedExcluded ? ' col-excluded' : ''}">${fmtMoney(r.new.ot)}</td>`);
+      cells.push(`<td class="num mono">${fmtMoney(r.new.profit)}<div class="old-val tabular">${fmtMoney(r.old.profit)}</div></td>`);
+      cells.push(`<td class="margin-cell">
           <div class="margin-track">
             <div class="margin-mid"></div>
             <div class="margin-bar old" style="left:${oldStyle.left}; width:${oldStyle.width}"></div>
@@ -691,10 +800,15 @@ function render(){
             <span class="old-val">${fmtPct(r.old.margin)}</span>
             <span style="font-weight:700;color:var(--${newGoodClass==='good'?'good':'bad'})">${fmtPct(r.new.margin)}</span>
           </div>
-        </td>
-        <td>${badge}</td>
-      </tr>`;
+        </td>`);
+      cells.push(`<td>${badge}</td>`);
+      if (dim === 'network'){
+        cells.push(`<td class="num mono">${fmtMoney(r.mt0Profit)}</td>`);
+        cells.push(`<td class="num mono">${r.mtBeProfit===null?'—':fmtMoney(r.mtBeProfit)}</td>`);
+      }
+      return `<tr>${cells.join('')}</tr>`;
     }).join('');
+    tbody.innerHTML = bodyHtml + renderTotalsRow(rows, dim, fixedExcluded, threshFrac);
   }
 }
 
@@ -718,18 +832,44 @@ function populateMonthSelect(){
   });
 }
 
-function populateProductSelect(){
-  const sel = document.getElementById('productSelect');
-  const names = MODEL.product.map(p => p.name);
-  const ordered = CUSTOM_ORDER_PRODUCT.filter(n => names.includes(n));
-  names.forEach(n => { if (!ordered.includes(n)) ordered.push(n); });
-  ordered.forEach(n => {
-    const opt = document.createElement('option');
-    opt.value = n;
-    opt.textContent = n;
-    sel.appendChild(opt);
+function orderedProductNames(){
+  const ordered = CUSTOM_ORDER_PRODUCT.filter(n => ALL_PRODUCT_NAMES.includes(n));
+  ALL_PRODUCT_NAMES.forEach(n => { if (!ordered.includes(n)) ordered.push(n); });
+  return ordered;
+}
+
+function updateProductMasterCheckbox(){
+  const boxes = document.querySelectorAll('.product-cb');
+  const master = document.getElementById('productAll');
+  const checkedCount = Array.from(boxes).filter(cb => cb.checked).length;
+  master.checked = checkedCount === boxes.length;
+  master.indeterminate = checkedCount > 0 && checkedCount < boxes.length;
+}
+
+function populateProductChecks(){
+  const container = document.getElementById('productChecks');
+  orderedProductNames().forEach(n => {
+    const lbl = document.createElement('label');
+    lbl.className = 'chip-check';
+    lbl.innerHTML = `<input type="checkbox" class="product-cb" data-name="${escapeHtml(n)}" checked> ${escapeHtml(n)}`;
+    container.appendChild(lbl);
+    lbl.querySelector('input').addEventListener('change', () => {
+      state.selectedProducts = new Set(
+        Array.from(document.querySelectorAll('.product-cb')).filter(cb => cb.checked).map(cb => cb.dataset.name)
+      );
+      updateProductMasterCheckbox();
+      render();
+    });
   });
 }
+
+document.getElementById('productAll').addEventListener('change', e => {
+  const checked = e.target.checked;
+  document.querySelectorAll('.product-cb').forEach(cb => { cb.checked = checked; });
+  state.selectedProducts = checked ? new Set(ALL_PRODUCT_NAMES) : new Set();
+  e.target.indeterminate = false;
+  render();
+});
 
 document.getElementById('kkSlider').addEventListener('input', e => {
   state.kk = parseFloat(e.target.value);
@@ -746,19 +886,31 @@ document.getElementById('kkNum').addEventListener('input', e => {
 });
 document.getElementById('presetBase').addEventListener('click', () => { state.kk = 8; syncKkInputs(); render(); });
 document.getElementById('presetCurrent').addEventListener('click', () => { state.kk = MODEL.current_kk*100; syncKkInputs(); render(); });
+if (BREAKEVEN_KK !== null){
+  const btn = document.getElementById('presetBreakeven');
+  btn.hidden = false;
+  btn.textContent = `Ноль прибыли aI&data hub — ${BREAKEVEN_KK.toFixed(1).replace('.', ',')}%`;
+  btn.addEventListener('click', () => { state.kk = BREAKEVEN_KK; syncKkInputs(); render(); });
+}
 document.getElementById('presetReset').addEventListener('click', () => {
   state.kk = MODEL.current_kk*100;
   state.thresh = 0;
   state.month = 'all';
-  state.product = 'all';
+  state.selectedProducts = new Set(ALL_PRODUCT_NAMES);
   state.excludeFixed = false;
   state.sortCol = null;
   state.sortDir = 'asc';
+  state.topN = { enabled: false, count: 5, metric: 'rev' };
   document.getElementById('threshSlider').value = 0;
   document.getElementById('threshValue').textContent = '≥ 0%';
   document.getElementById('monthSelect').value = 'all';
-  document.getElementById('productSelect').value = 'all';
   document.getElementById('excludeFixed').checked = false;
+  document.getElementById('topNEnabled').checked = false;
+  document.getElementById('topNCount').value = 5;
+  document.querySelectorAll('input[name="topNMetric"]').forEach(r => { r.checked = (r.value === 'rev'); });
+  document.querySelectorAll('.product-cb').forEach(cb => { cb.checked = true; });
+  document.getElementById('productAll').checked = true;
+  document.getElementById('productAll').indeterminate = false;
   syncKkInputs();
   render();
 });
@@ -773,19 +925,27 @@ document.getElementById('monthSelect').addEventListener('change', e => {
   state.month = e.target.value;
   render();
 });
-document.getElementById('productSelect').addEventListener('change', e => {
-  state.product = e.target.value;
-  render();
-});
 document.getElementById('excludeFixed').addEventListener('change', e => {
   state.excludeFixed = e.target.checked;
   render();
 });
-
-document.getElementById('searchInput').addEventListener('input', e => {
-  state.search = e.target.value;
+document.getElementById('topNEnabled').addEventListener('change', e => {
+  state.topN.enabled = e.target.checked;
   render();
 });
+document.getElementById('topNCount').addEventListener('input', e => {
+  let v = parseInt(e.target.value, 10);
+  if (isNaN(v)) return;
+  v = Math.max(3, Math.min(10, v));
+  state.topN.count = v;
+  render();
+});
+document.querySelectorAll('input[name="topNMetric"]').forEach(r => {
+  r.addEventListener('change', e => {
+    if (e.target.checked){ state.topN.metric = e.target.value; render(); }
+  });
+});
+
 document.getElementById('onlyIneff').addEventListener('change', e => {
   state.onlyIneff = e.target.checked;
   render();
@@ -797,7 +957,6 @@ document.querySelectorAll('.tab').forEach(btn => {
     btn.classList.add('active');
     state.dim = btn.dataset.dim;
     document.getElementById('productFilterRow').hidden = (state.dim !== 'network');
-    if (state.dim !== 'network'){ state.product = 'all'; document.getElementById('productSelect').value = 'all'; }
     render();
   });
 });
@@ -819,7 +978,7 @@ document.querySelectorAll('th.sortable').forEach(th => {
 });
 
 populateMonthSelect();
-populateProductSelect();
+populateProductChecks();
 syncKkInputs();
 render();
 </script>
