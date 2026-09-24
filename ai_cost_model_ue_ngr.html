@@ -79,7 +79,7 @@ body{
   padding-block: 20px 40px;
   line-height:1.45;
 }
-.wrap{max-width:1320px;margin:0 auto;}
+.wrap{max-width:min(95vw, 1900px);margin:0 auto;}
 h1,h2,h3{font-family:"Fraunces", Georgia, serif; font-weight:600; letter-spacing:-.01em; text-wrap:balance; margin:0;}
 .tabular{font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1;}
 .mono{font-family:"IBM Plex Mono", ui-monospace, monospace;}
@@ -255,16 +255,16 @@ select:focus-visible{outline:2px solid var(--accent);}
   overflow:hidden;
 }
 .table-scroll{overflow-x:auto;}
-table{border-collapse:collapse; width:100%; min-width:1300px;}
+table{border-collapse:collapse; width:100%;}
 thead th{
   position:sticky; top:0;
   background:var(--surface-2);
   text-align:left;
-  font-size:.72rem;
+  font-size:.7rem;
   text-transform:uppercase;
-  letter-spacing:.05em;
+  letter-spacing:.04em;
   color:var(--ink-muted);
-  padding:10px 12px;
+  padding:8px 6px;
   border-bottom:1px solid var(--border);
   white-space:nowrap;
 }
@@ -274,9 +274,9 @@ th.sortable:hover{color:var(--ink);}
 th.sortable.sort-active{color:var(--accent);}
 th .sort-ind{display:inline-block; width:.9em; font-size:.75em; color:var(--accent);}
 tbody td{
-  padding:9px 12px;
+  padding:7px 6px;
   border-bottom:1px solid var(--border);
-  font-size:.88rem;
+  font-size:.79rem;
   white-space:nowrap;
 }
 tbody tr:last-child td{border-bottom:none;}
@@ -284,10 +284,13 @@ tbody tr:hover{background:var(--surface-2);}
 .seg-name{font-weight:600; color:var(--ink);}
 .col-excluded{opacity:.4; text-decoration:line-through; text-decoration-color:var(--ink-faint);}
 .old-val{color:var(--ink-faint); font-size:.82em;}
+.pct-clip{display:inline-block; max-width:58px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; cursor:default;}
+.clip-name{display:inline-block; max-width:92px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; cursor:default;}
+td.mono .clip-name{max-width:72px;}
 .badge{
-  display:inline-flex; align-items:center; gap:5px;
-  padding:2px 9px; border-radius:999px;
-  font-size:.72rem; font-weight:700;
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 7px; border-radius:999px;
+  font-size:.68rem; font-weight:700;
   white-space:nowrap;
 }
 .badge.good{background:var(--good-bg); color:var(--good);}
@@ -295,7 +298,7 @@ tbody tr:hover{background:var(--surface-2);}
 .badge.flip{background:var(--bad); color:#fff;}
 .badge.na{background:var(--track); color:var(--ink-faint);}
 
-.margin-cell{width:190px;}
+.margin-cell{width:105px;}
 .margin-track{
   position:relative;
   height:26px;
@@ -412,7 +415,7 @@ tr.total-row .old-val{font-weight:500;}
         <label><input type="checkbox" id="topNEnabled"> Показать только топ</label>
       </div>
       <div class="field" style="flex:0 0 90px;">
-        <label for="topNCount">Кол-во сетей</label>
+        <label for="topNCount">Кол-во строк</label>
         <input type="number" id="topNCount" class="kk-num tabular" min="3" max="10" step="1" value="5" style="width:5ch;">
       </div>
       <div class="field">
@@ -436,17 +439,17 @@ tr.total-row .old-val{font-weight:500;}
           <tr>
             <th class="sortable" data-col="name"><span class="th-label">Разрез</span><span class="sort-ind"></span></th>
             <th class="sortable net-col" data-col="products" id="thProducts"><span class="th-label">Продукт</span><span class="sort-ind"></span></th>
-            <th class="num sortable" data-col="rev"><span class="th-label">Выручка, k$</span><span class="sort-ind"></span></th>
-            <th class="num sortable" data-col="mt"><span class="th-label">Затраты на МТ, k$</span><span class="sort-ind"></span></th>
-            <th class="num sortable" data-col="va"><span class="th-label">Переменные, k$</span><span class="sort-ind"></span></th>
-            <th class="num sortable" data-col="gp"><span class="th-label">Gross Profit, k$</span><span class="sort-ind"></span></th>
-            <th class="num sortable" data-col="marginGP"><span class="th-label">Margin GP</span><span class="sort-ind"></span></th>
-            <th class="num sortable" id="thOther" data-col="ot"><span class="th-label">Прочие, k$</span><span class="sort-ind"></span></th>
-            <th class="num sortable" data-col="profit"><span class="th-label">Прибыль, k$</span><span class="sort-ind"></span></th>
-            <th class="margin-cell sortable" data-col="margin"><span class="th-label">Рентабельность (8% → новый)</span><span class="sort-ind"></span></th>
-            <th>Статус</th>
-            <th class="num sortable net-col" data-col="mt0Profit" id="thMt0"><span class="th-label">Прибыль, МТ=0</span><span class="sort-ind"></span></th>
-            <th class="num sortable net-col" data-col="mtBeProfit" id="thMtBe"><span class="th-label">Прибыль, МТ=точка нуля</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="rev" title="Выручка, k$"><span class="th-label">Выручка</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="mt" title="Затраты на МТ, k$"><span class="th-label">МТ</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="va" title="Переменные затраты, k$"><span class="th-label">Перем.</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="gp" title="Gross Profit = Выручка − МТ − Переменные, k$"><span class="th-label">GP</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="marginGP" title="Margin GP = Gross Profit / Выручка"><span class="th-label">Margin GP</span><span class="sort-ind"></span></th>
+            <th class="num sortable" id="thOther" data-col="ot" title="Прочие (постоянные) затраты, k$"><span class="th-label">Прочие</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="profit" title="Прибыль, k$"><span class="th-label">Прибыль</span><span class="sort-ind"></span></th>
+            <th class="margin-cell sortable" data-col="margin" title="Рентабельность: сверху — старый расчёт (NGR 8%), снизу — новый"><span class="th-label">Рентаб.</span><span class="sort-ind"></span></th>
+            <th title="Статус при текущем пороге и параметре kk">Статус</th>
+            <th class="num sortable net-col" data-col="mt0Profit" id="thMt0" title="Прибыль сети, если бы затраты на МТ были равны нулю"><span class="th-label">МТ=0</span><span class="sort-ind"></span></th>
+            <th class="num sortable net-col" data-col="mtBeProfit" id="thMtBe" title="Прибыль сети при затратах на МТ, посчитанных по kk, где прибыль aI&data hub = 0"><span class="th-label">МТ=точка нуля</span><span class="sort-ind"></span></th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -472,7 +475,7 @@ tr.total-row .old-val{font-weight:500;}
     <br><br>
     В селекторе месяца «Среднее за месяц» делит сумму за весь период на число месяцев в модели (сейчас 5), а не на число месяцев, где у разреза была активность.
     <br><br>
-    На вкладке «По покерным сетям»: юнит aI&amp;data hub/brain убран из списка — это внутренний cost-center, а не поле «сеть», и разбивки по продукту/сети для него нет. Кнопка «Ноль прибыли aI&amp;data hub» ставит параметр kk в точку, где прибыль этого юнита равна нулю (при текущих данных — около 3,4%); от неё же считаются два дополнительных столбца в конце таблицы — гипотетическая прибыль сети, если бы «Затраты на МТ» были равны 0, и если бы они считались по этому нулевому для aI&amp;data hub значению kk (остальные статьи при этом берутся как сейчас, без изменений). Фильтр «Продукт» стал множественным (чекбоксы), а «Показать только топ» ограничивает список N сетями с наибольшей выручкой или прибылью (после всех остальных фильтров, до сортировки по клику на столбец).
+    На вкладке «По покерным сетям» строка — это пара «сеть + продукт», не только сеть: если у сети есть проводки по нескольким продуктам, она встретится в таблице несколько раз, по одной строке на каждый продукт (без суммирования). Юнит aI&amp;data hub/brain убран из списка — это внутренний cost-center, а не поле «сеть». Кнопка «Ноль прибыли aI&amp;data hub» ставит параметр kk в точку, где прибыль этого юнита равна нулю (при текущих данных — около 3,4%); от неё же считаются два дополнительных столбца в конце таблицы — гипотетическая прибыль строки, если бы «Затраты на МТ» были равны 0, и если бы они считались по этому нулевому для aI&amp;data hub значению kk (остальные статьи при этом берутся как сейчас, без изменений). Фильтр «Продукт» — множественный (чекбоксы), а «Показать только топ» ограничивает список N строками с наибольшей выручкой или прибылью (после остальных фильтров, до сортировки по клику на столбец).
   </div>
 
 </div>
@@ -530,20 +533,6 @@ const state = {
   topN: { enabled: false, count: 5, metric: 'rev' },
 };
 
-function networkAgg(net, productSet, monthKey){
-  const out = zero8();
-  for (const pname in net.products){
-    if (!productSet.has(pname)) continue;
-    addInto(out, monthsAgg(net.products[pname], monthKey));
-  }
-  return out;
-}
-
-function networkParticipates(net, productSet){
-  for (const pname in net.products){ if (productSet.has(pname)) return true; }
-  return false;
-}
-
 function computeRow(agg8, kkPct, includeFixed){
   if (includeFixed === undefined) includeFixed = true;
   const kk = kkPct/100;
@@ -569,6 +558,10 @@ function fmtPct(v){
   const sign = v > 0 ? '+' : (v < 0 ? '−' : '');
   return sign + Math.abs(v*100).toFixed(1) + '%';
 }
+function fmtPctClip(v){
+  const full = fmtPct(v);
+  return `<span class="pct-clip" title="${full}">${full}</span>`;
+}
 
 function marginBarStyle(margin){
   const DOMAIN = 0.6;
@@ -579,43 +572,48 @@ function marginBarStyle(margin){
   return {left:(50+pct)+'%', width:(-pct)+'%'};
 }
 
+function makeRow(name, agg, threshFrac, includeFixed){
+  const oldR = computeRow(agg, MODEL.baseline_kk*100, includeFixed);
+  const newR = computeRow(agg, state.kk, includeFixed);
+  const effOld = oldR.margin !== null && oldR.margin >= threshFrac;
+  const effNew = newR.margin !== null && newR.margin >= threshFrac;
+  let status;
+  if (newR.margin === null) status = 'na';
+  else if (effOld && !effNew) status = 'flip';
+  else if (!effNew) status = 'bad';
+  else status = 'good';
+  return {name, old: oldR, new: newR, status};
+}
+
 function buildRows(){
   const dim = state.dim;
   const threshFrac = state.thresh/100;
-  let list;
+
   if (dim === 'network'){
-    list = MODEL.network.filter(n => n.name !== '-' && networkParticipates(n, state.selectedProducts));
-  } else {
-    list = dim === 'unit' ? MODEL.unit : MODEL.product;
+    const includeFixed = !state.excludeFixed;
+    const rows = [];
+    MODEL.network.forEach(net => {
+      if (net.name === '-') return;
+      Object.keys(net.products).forEach(pname => {
+        if (!state.selectedProducts.has(pname)) return;
+        const agg = monthsAgg(net.products[pname], state.month);
+        const row = makeRow(net.name, agg, threshFrac, includeFixed);
+        row.product = pname;
+        row.mt0Profit = computeRow(agg, 0, includeFixed).profit;
+        row.mtBeProfit = BREAKEVEN_KK !== null ? computeRow(agg, BREAKEVEN_KK, includeFixed).profit : null;
+        rows.push(row);
+      });
+    });
+    return rows;
   }
-  const includeFixed = dim === 'network' ? !state.excludeFixed : true;
-  return list.map(item => {
-    const agg = dim === 'network'
-      ? networkAgg(item, state.selectedProducts, state.month)
-      : monthsAgg(item.months, state.month);
-    const oldR = computeRow(agg, MODEL.baseline_kk*100, includeFixed);
-    const newR = computeRow(agg, state.kk, includeFixed);
-    const effOld = oldR.margin !== null && oldR.margin >= threshFrac;
-    const effNew = newR.margin !== null && newR.margin >= threshFrac;
-    let status;
-    if (newR.margin === null) status = 'na';
-    else if (effOld && !effNew) status = 'flip';
-    else if (!effNew) status = 'bad';
-    else status = 'good';
-    const row = {name: item.name, old: oldR, new: newR, status};
-    if (dim === 'network'){
-      const prodList = Object.keys(item.products).filter(p => state.selectedProducts.has(p));
-      row.productsLabel = prodList.length ? prodList.join(', ') : '—';
-      row.mt0Profit = computeRow(agg, 0, includeFixed).profit;
-      row.mtBeProfit = BREAKEVEN_KK !== null ? computeRow(agg, BREAKEVEN_KK, includeFixed).profit : null;
-    }
-    return row;
-  });
+
+  const list = dim === 'unit' ? MODEL.unit : MODEL.product;
+  return list.map(item => makeRow(item.name, monthsAgg(item.months, state.month), threshFrac, true));
 }
 
 function getSortValue(r, col){
   if (col === 'name') return r.name;
-  if (col === 'products') return r.productsLabel || '';
+  if (col === 'products') return r.product || '';
   if (col === 'mt0Profit') return r.mt0Profit;
   if (col === 'mtBeProfit') return r.mtBeProfit === null ? -Infinity : r.mtBeProfit;
   if (col === 'margin' || col === 'marginGP') return r.new[col] === null ? -Infinity : r.new[col];
@@ -701,10 +699,10 @@ function renderTotalsRow(rows, dim, fixedExcluded, threshFrac){
   cells.push(`<td class="num mono">${fmtMoney(t.mt)}<div class="old-val tabular">${fmtMoney(t.mtOld)}</div></td>`);
   cells.push(`<td class="num mono">${fmtMoney(t.va)}</td>`);
   cells.push(`<td class="num mono">${fmtMoney(t.gp)}<div class="old-val tabular">${fmtMoney(t.gpOld)}</div></td>`);
-  cells.push(`<td class="num mono">${fmtPct(t.marginGP)}<div class="old-val tabular">${fmtPct(t.marginGPOld)}</div></td>`);
+  cells.push(`<td class="num mono">${fmtPctClip(t.marginGP)}<div class="old-val tabular">${fmtPctClip(t.marginGPOld)}</div></td>`);
   cells.push(`<td class="num mono${fixedExcluded ? ' col-excluded' : ''}">${fmtMoney(t.ot)}</td>`);
   cells.push(`<td class="num mono">${fmtMoney(t.profit)}<div class="old-val tabular">${fmtMoney(t.profitOld)}</div></td>`);
-  cells.push(`<td class="num mono"><span style="color:var(--${goodClass})">${fmtPct(t.margin)}</span><div class="old-val tabular">${fmtPct(t.marginOld)}</div></td>`);
+  cells.push(`<td class="num mono"><span style="color:var(--${goodClass})">${fmtPctClip(t.margin)}</span><div class="old-val tabular">${fmtPctClip(t.marginOld)}</div></td>`);
   cells.push(`<td></td>`);
   if (dim === 'network'){
     cells.push(`<td class="num mono">${fmtMoney(t.mt0Profit)}</td>`);
@@ -726,19 +724,19 @@ function render(){
 
   const countBad = fullRows.filter(r => r.status==='bad' || r.status==='flip').length;
   const countFlip = fullRows.filter(r => r.status==='flip').length;
-  const dimLabel = dim==='unit' ? 'юнитов' : dim==='product' ? 'продуктов' : 'покерных сетей';
+  const dimLabel = dim==='unit' ? 'юнитов' : dim==='product' ? 'продуктов' : 'строк сеть×продукт';
   const fixedExcluded = dim === 'network' && state.excludeFixed;
 
   document.querySelectorAll('.net-col').forEach(el => { el.hidden = dim !== 'network'; });
 
   const thOther = document.getElementById('thOther');
-  thOther.querySelector('.th-label').textContent = fixedExcluded ? 'Прочие, k$ (искл. из прибыли)' : 'Прочие, k$';
+  thOther.querySelector('.th-label').textContent = fixedExcluded ? 'Прочие (искл.)' : 'Прочие';
   thOther.classList.toggle('col-excluded', fixedExcluded);
 
   const thMtBe = document.getElementById('thMtBe');
   thMtBe.querySelector('.th-label').textContent = BREAKEVEN_KK !== null
-    ? `Прибыль, МТ=${BREAKEVEN_KK.toFixed(1).replace('.', ',')}%`
-    : 'Прибыль, МТ=точка нуля';
+    ? `МТ=${BREAKEVEN_KK.toFixed(1).replace('.', ',')}%`
+    : 'МТ=точка нуля';
 
   const periodNote = document.getElementById('periodNote');
   if (state.month === 'avg'){
@@ -781,19 +779,20 @@ function render(){
       const newStyle = marginBarStyle(r.new.margin);
       const newGoodClass = (r.new.margin !== null && r.new.margin >= threshFrac) ? 'good' : 'bad';
       let badge;
-      if (r.status==='flip') badge = '<span class="badge flip">⚠ стало неэффективно</span>';
-      else if (r.status==='bad') badge = '<span class="badge bad">неэффективно</span>';
-      else if (r.status==='na') badge = '<span class="badge na">нет выручки</span>';
-      else badge = '<span class="badge good">эффективно</span>';
+      if (r.status==='flip') badge = '<span class="badge flip" title="Было ≥ порога при NGR 8%, стало ниже при новом kk">⚠ стало хуже</span>';
+      else if (r.status==='bad') badge = '<span class="badge bad" title="Рентабельность ниже порога">неэффективно</span>';
+      else if (r.status==='na') badge = '<span class="badge na" title="Выручка близка к нулю">нет выручки</span>';
+      else badge = '<span class="badge good" title="Рентабельность не ниже порога">эффективно</span>';
 
       const cells = [];
-      cells.push(`<td class="seg-name">${escapeHtml(displayName(r.name, dim))}</td>`);
-      if (dim === 'network') cells.push(`<td class="mono">${escapeHtml(r.productsLabel)}</td>`);
+      const dn = displayName(r.name, dim);
+      cells.push(`<td class="seg-name"><span class="clip-name" title="${escapeHtml(dn)}">${escapeHtml(dn)}</span></td>`);
+      if (dim === 'network') cells.push(`<td class="mono"><span class="clip-name" title="${escapeHtml(r.product)}">${escapeHtml(r.product)}</span></td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.rev)}<div class="old-val tabular">${fmtMoney(r.old.rev)}</div></td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.mt)}<div class="old-val tabular">${fmtMoney(r.old.mt)}</div></td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.va)}</td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.gp)}<div class="old-val tabular">${fmtMoney(r.old.gp)}</div></td>`);
-      cells.push(`<td class="num mono">${fmtPct(r.new.marginGP)}<div class="old-val tabular">${fmtPct(r.old.marginGP)}</div></td>`);
+      cells.push(`<td class="num mono">${fmtPctClip(r.new.marginGP)}<div class="old-val tabular">${fmtPctClip(r.old.marginGP)}</div></td>`);
       cells.push(`<td class="num mono${fixedExcluded ? ' col-excluded' : ''}">${fmtMoney(r.new.ot)}</td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.profit)}<div class="old-val tabular">${fmtMoney(r.old.profit)}</div></td>`);
       cells.push(`<td class="margin-cell">
@@ -803,8 +802,8 @@ function render(){
             <div class="margin-bar new ${newGoodClass}" style="left:${newStyle.left}; width:${newStyle.width}"></div>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:.68rem;margin-top:2px" class="tabular mono">
-            <span class="old-val">${fmtPct(r.old.margin)}</span>
-            <span style="font-weight:700;color:var(--${newGoodClass==='good'?'good':'bad'})">${fmtPct(r.new.margin)}</span>
+            <span class="old-val">${fmtPctClip(r.old.margin)}</span>
+            <span style="font-weight:700;color:var(--${newGoodClass==='good'?'good':'bad'})">${fmtPctClip(r.new.margin)}</span>
           </div>
         </td>`);
       cells.push(`<td>${badge}</td>`);
