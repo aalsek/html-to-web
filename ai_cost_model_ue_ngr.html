@@ -272,6 +272,7 @@ tbody td{
 tbody tr:last-child td{border-bottom:none;}
 tbody tr:hover{background:var(--surface-2);}
 .seg-name{font-weight:600; color:var(--ink);}
+.col-excluded{opacity:.4; text-decoration:line-through; text-decoration-color:var(--ink-faint);}
 .old-val{color:var(--ink-faint); font-size:.82em;}
 .badge{
   display:inline-flex; align-items:center; gap:5px;
@@ -385,6 +386,9 @@ tbody tr:hover{background:var(--surface-2);}
         <option value="all">Все продукты</option>
       </select>
     </div>
+    <div class="field check-field">
+      <label><input type="checkbox" id="excludeFixed"> Исключить постоянные затраты (Прочие) из прибыли</label>
+    </div>
   </div>
 
   <div class="period-note" id="periodNote"></div>
@@ -400,7 +404,7 @@ tbody tr:hover{background:var(--surface-2);}
             <th class="num">Выручка, k$</th>
             <th class="num">Затраты на МТ, k$</th>
             <th class="num">Переменные, k$</th>
-            <th class="num">Прочие, k$</th>
+            <th class="num" id="thOther">Прочие, k$</th>
             <th class="num">Прибыль, k$</th>
             <th class="margin-cell">Рентабельность (8% → новый)</th>
             <th>Статус</th>
@@ -424,6 +428,8 @@ tbody tr:hover{background:var(--surface-2);}
     Порядок строк на вкладках «По юнитам» и «По продуктам» фиксированный (Deeprun → Franchise → NZT → Nous → OwnPlatforms → aI&amp;data hub, продукты — в порядке принадлежности к этим юнитам) и не зависит от рентабельности. На вкладке «По покерным сетям» сети, наоборот, отсортированы по рентабельности — от самых проблемных.
     <br><br>
     В селекторе месяца «Среднее за месяц» делит сумму за весь период на число месяцев в модели (сейчас 5), а не на число месяцев, где у разреза была активность — так среднее корректно учитывает и «пустые» месяцы конкретного разреза.
+    <br><br>
+    На вкладке «По покерным сетям» галочка «Исключить постоянные затраты» убирает статью «Прочие» (это статьи ItemGroup=«постоянные», кроме braincost) из прибыли и рентабельности — остаются выручка, затраты на МТ и переменные затраты. Сама сумма «Прочие» в таблице продолжает отображаться (перечёркнутой), просто не участвует в расчёте.
   </div>
 
 </div>
@@ -442,6 +448,7 @@ const state = {
   onlyIneff: false,
   month: 'all',
   product: 'all',
+  excludeFixed: false,
 };
 
 function zero8(){ return [0,0,0,0,0,0,0,0]; }
@@ -480,14 +487,15 @@ function networkParticipates(net, productKey){
   return Object.prototype.hasOwnProperty.call(net.products, productKey);
 }
 
-function computeRow(agg8, kkPct){
+function computeRow(agg8, kkPct, includeFixed){
+  if (includeFixed === undefined) includeFixed = true;
   const kk = kkPct/100;
   const ratio = kk / MODEL.baseline_kk;
   const rev = agg8[0] + agg8[1]*ratio;
   const mt  = agg8[2] + agg8[3]*ratio;
   const va  = agg8[4] + agg8[5]*ratio;
   const ot  = agg8[6] + agg8[7]*ratio;
-  const profit = rev+mt+va+ot;
+  const profit = rev+mt+va+(includeFixed ? ot : 0);
   const margin = Math.abs(rev) > 0.05 ? profit/rev : null;
   return {rev, mt, va, ot, profit, margin};
 }
@@ -521,12 +529,13 @@ function buildRows(){
   } else {
     list = dim === 'unit' ? MODEL.unit : MODEL.product;
   }
+  const includeFixed = dim === 'network' ? !state.excludeFixed : true;
   return list.map(item => {
     const agg = dim === 'network'
       ? networkAgg(item, state.product, state.month)
       : monthsAgg(item.months, state.month);
-    const oldR = computeRow(agg, MODEL.baseline_kk*100);
-    const newR = computeRow(agg, state.kk);
+    const oldR = computeRow(agg, MODEL.baseline_kk*100, includeFixed);
+    const newR = computeRow(agg, state.kk, includeFixed);
     const effOld = oldR.margin !== null && oldR.margin >= threshFrac;
     const effNew = newR.margin !== null && newR.margin >= threshFrac;
     let status;
@@ -566,6 +575,11 @@ function render(){
   const countBad = fullRows.filter(r => r.status==='bad' || r.status==='flip').length;
   const countFlip = fullRows.filter(r => r.status==='flip').length;
   const dimLabel = dim==='unit' ? 'юнитов' : dim==='product' ? 'продуктов' : 'покерных сетей';
+  const fixedExcluded = dim === 'network' && state.excludeFixed;
+
+  const thOther = document.getElementById('thOther');
+  thOther.textContent = fixedExcluded ? 'Прочие, k$ (искл. из прибыли)' : 'Прочие, k$';
+  thOther.classList.toggle('col-excluded', fixedExcluded);
 
   const periodNote = document.getElementById('periodNote');
   if (state.month === 'avg'){
@@ -617,7 +631,7 @@ function render(){
         <td class="num mono">${fmtMoney(r.new.rev)}<div class="old-val tabular">${fmtMoney(r.old.rev)}</div></td>
         <td class="num mono">${fmtMoney(r.new.mt)}<div class="old-val tabular">${fmtMoney(r.old.mt)}</div></td>
         <td class="num mono">${fmtMoney(r.new.va)}</td>
-        <td class="num mono">${fmtMoney(r.new.ot)}</td>
+        <td class="num mono${fixedExcluded ? ' col-excluded' : ''}">${fmtMoney(r.new.ot)}</td>
         <td class="num mono">${fmtMoney(r.new.profit)}<div class="old-val tabular">${fmtMoney(r.old.profit)}</div></td>
         <td class="margin-cell">
           <div class="margin-track">
@@ -689,10 +703,12 @@ document.getElementById('presetReset').addEventListener('click', () => {
   state.thresh = 0;
   state.month = 'all';
   state.product = 'all';
+  state.excludeFixed = false;
   document.getElementById('threshSlider').value = 0;
   document.getElementById('threshValue').textContent = '≥ 0%';
   document.getElementById('monthSelect').value = 'all';
   document.getElementById('productSelect').value = 'all';
+  document.getElementById('excludeFixed').checked = false;
   syncKkInputs();
   render();
 });
@@ -709,6 +725,10 @@ document.getElementById('monthSelect').addEventListener('change', e => {
 });
 document.getElementById('productSelect').addEventListener('change', e => {
   state.product = e.target.value;
+  render();
+});
+document.getElementById('excludeFixed').addEventListener('change', e => {
+  state.excludeFixed = e.target.checked;
   render();
 });
 
