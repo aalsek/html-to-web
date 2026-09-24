@@ -263,6 +263,10 @@ thead th{
   white-space:nowrap;
 }
 th.num, td.num{text-align:right;}
+th.sortable{cursor:pointer; user-select:none;}
+th.sortable:hover{color:var(--ink);}
+th.sortable.sort-active{color:var(--accent);}
+th .sort-ind{display:inline-block; width:.9em; font-size:.75em; color:var(--accent);}
 tbody td{
   padding:9px 12px;
   border-bottom:1px solid var(--border);
@@ -343,9 +347,9 @@ tbody tr:hover{background:var(--surface-2);}
       <div class="kk-control">
         <label for="kkSlider">Параметр «новый NGR» (kk, ячейка L1)</label>
         <div class="kk-row">
-          <input type="range" id="kkSlider" min="4" max="30" step="0.25" value="13">
+          <input type="range" id="kkSlider" min="0" max="30" step="0.25" value="13">
           <span class="kk-value tabular" id="kkValue">13,0%</span>
-          <input type="number" id="kkNum" class="kk-num tabular" min="4" max="30" step="0.25" value="13">
+          <input type="number" id="kkNum" class="kk-num tabular" min="0" max="30" step="0.25" value="13">
         </div>
         <div class="presets">
           <button class="btn" id="presetBase" data-kk="8">База 8%</button>
@@ -400,13 +404,13 @@ tbody tr:hover{background:var(--surface-2);}
       <table>
         <thead>
           <tr>
-            <th>Разрез</th>
-            <th class="num">Выручка, k$</th>
-            <th class="num">Затраты на МТ, k$</th>
-            <th class="num">Переменные, k$</th>
-            <th class="num" id="thOther">Прочие, k$</th>
-            <th class="num">Прибыль, k$</th>
-            <th class="margin-cell">Рентабельность (8% → новый)</th>
+            <th class="sortable" data-col="name"><span class="th-label">Разрез</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="rev"><span class="th-label">Выручка, k$</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="mt"><span class="th-label">Затраты на МТ, k$</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="va"><span class="th-label">Переменные, k$</span><span class="sort-ind"></span></th>
+            <th class="num sortable" id="thOther" data-col="ot"><span class="th-label">Прочие, k$</span><span class="sort-ind"></span></th>
+            <th class="num sortable" data-col="profit"><span class="th-label">Прибыль, k$</span><span class="sort-ind"></span></th>
+            <th class="margin-cell sortable" data-col="margin"><span class="th-label">Рентабельность (8% → новый)</span><span class="sort-ind"></span></th>
             <th>Статус</th>
           </tr>
         </thead>
@@ -430,6 +434,8 @@ tbody tr:hover{background:var(--surface-2);}
     В селекторе месяца «Среднее за месяц» делит сумму за весь период на число месяцев в модели (сейчас 5), а не на число месяцев, где у разреза была активность — так среднее корректно учитывает и «пустые» месяцы конкретного разреза.
     <br><br>
     На вкладке «По покерным сетям» галочка «Исключить постоянные затраты» убирает статью «Прочие» (это статьи ItemGroup=«постоянные», кроме braincost) из прибыли и рентабельности — остаются выручка, затраты на МТ и переменные затраты. Сама сумма «Прочие» в таблице продолжает отображаться (перечёркнутой), просто не участвует в расчёте.
+    <br><br>
+    Заголовки столбцов таблицы кликабельны: клик сортирует по столбцу (по возрастанию → по убыванию → назад к порядку по умолчанию — фиксированному на вкладках «По юнитам»/«По продуктам» и по рентабельности на «По покерным сетям»).
   </div>
 
 </div>
@@ -449,6 +455,8 @@ const state = {
   month: 'all',
   product: 'all',
   excludeFixed: false,
+  sortCol: null,
+  sortDir: 'asc',
 };
 
 function zero8(){ return [0,0,0,0,0,0,0,0]; }
@@ -547,7 +555,24 @@ function buildRows(){
   });
 }
 
+function getSortValue(r, col){
+  if (col === 'name') return r.name;
+  if (col === 'margin') return r.new.margin === null ? -Infinity : r.new.margin;
+  return r.new[col];
+}
+
 function sortRows(rows, dim){
+  if (state.sortCol){
+    const col = state.sortCol;
+    const dir = state.sortDir === 'desc' ? -1 : 1;
+    rows.sort((a,b) => {
+      const av = getSortValue(a, col);
+      const bv = getSortValue(b, col);
+      if (typeof av === 'string') return dir * av.localeCompare(bv);
+      return dir * (av - bv);
+    });
+    return;
+  }
   if (dim === 'unit'){
     rows.sort((a,b) => CUSTOM_ORDER_UNIT.indexOf(a.name) - CUSTOM_ORDER_UNIT.indexOf(b.name));
   } else if (dim === 'product'){
@@ -559,6 +584,20 @@ function sortRows(rows, dim){
       return am - bm;
     });
   }
+}
+
+function updateSortIndicators(){
+  document.querySelectorAll('th.sortable').forEach(th => {
+    const ind = th.querySelector('.sort-ind');
+    const col = th.dataset.col;
+    if (state.sortCol === col){
+      ind.textContent = state.sortDir === 'asc' ? '▲' : '▼';
+      th.classList.add('sort-active');
+    } else {
+      ind.textContent = '';
+      th.classList.remove('sort-active');
+    }
+  });
 }
 
 function escapeHtml(s){
@@ -578,7 +617,7 @@ function render(){
   const fixedExcluded = dim === 'network' && state.excludeFixed;
 
   const thOther = document.getElementById('thOther');
-  thOther.textContent = fixedExcluded ? 'Прочие, k$ (искл. из прибыли)' : 'Прочие, k$';
+  thOther.querySelector('.th-label').textContent = fixedExcluded ? 'Прочие, k$ (искл. из прибыли)' : 'Прочие, k$';
   thOther.classList.toggle('col-excluded', fixedExcluded);
 
   const periodNote = document.getElementById('periodNote');
@@ -609,6 +648,7 @@ function render(){
   if (state.onlyIneff) rows = rows.filter(r => r.status==='bad' || r.status==='flip');
   rows = rows.slice();
   sortRows(rows, dim);
+  updateSortIndicators();
 
   const tbody = document.getElementById('tableBody');
   const emptyState = document.getElementById('emptyState');
@@ -691,7 +731,7 @@ document.getElementById('kkSlider').addEventListener('input', e => {
 document.getElementById('kkNum').addEventListener('input', e => {
   let v = parseFloat(e.target.value);
   if (isNaN(v)) return;
-  v = Math.max(4, Math.min(30, v));
+  v = Math.max(0, Math.min(30, v));
   state.kk = v;
   syncKkInputs();
   render();
@@ -704,6 +744,8 @@ document.getElementById('presetReset').addEventListener('click', () => {
   state.month = 'all';
   state.product = 'all';
   state.excludeFixed = false;
+  state.sortCol = null;
+  state.sortDir = 'asc';
   document.getElementById('threshSlider').value = 0;
   document.getElementById('threshValue').textContent = '≥ 0%';
   document.getElementById('monthSelect').value = 'all';
@@ -748,6 +790,22 @@ document.querySelectorAll('.tab').forEach(btn => {
     state.dim = btn.dataset.dim;
     document.getElementById('productFilterRow').hidden = (state.dim !== 'network');
     if (state.dim !== 'network'){ state.product = 'all'; document.getElementById('productSelect').value = 'all'; }
+    render();
+  });
+});
+
+document.querySelectorAll('th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (state.sortCol !== col){
+      state.sortCol = col;
+      state.sortDir = 'asc';
+    } else if (state.sortDir === 'asc'){
+      state.sortDir = 'desc';
+    } else {
+      state.sortCol = null;
+      state.sortDir = 'asc';
+    }
     render();
   });
 });
