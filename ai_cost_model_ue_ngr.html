@@ -264,7 +264,7 @@ thead th{
   text-transform:uppercase;
   letter-spacing:.04em;
   color:var(--ink-muted);
-  padding:8px 6px;
+  padding:8px 5px;
   border-bottom:1px solid var(--border);
   white-space:nowrap;
 }
@@ -274,9 +274,9 @@ th.sortable:hover{color:var(--ink);}
 th.sortable.sort-active{color:var(--accent);}
 th .sort-ind{display:inline-block; width:.9em; font-size:.75em; color:var(--accent);}
 tbody td{
-  padding:7px 6px;
+  padding:7px 5px;
   border-bottom:1px solid var(--border);
-  font-size:.79rem;
+  font-size:.78rem;
   white-space:nowrap;
 }
 tbody tr:last-child td{border-bottom:none;}
@@ -284,9 +284,9 @@ tbody tr:hover{background:var(--surface-2);}
 .seg-name{font-weight:600; color:var(--ink);}
 .col-excluded{opacity:.4; text-decoration:line-through; text-decoration-color:var(--ink-faint);}
 .old-val{color:var(--ink-faint); font-size:.82em;}
-.pct-clip{display:inline-block; max-width:58px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; cursor:default;}
-.clip-name{display:inline-block; max-width:92px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; cursor:default;}
-td.mono .clip-name{max-width:72px;}
+.pct-clip{display:inline-block; max-width:68px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; cursor:default;}
+.clip-name{display:inline-block; max-width:82px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; cursor:default;}
+td.mono .clip-name{max-width:64px;}
 .badge{
   display:inline-flex; align-items:center; gap:4px;
   padding:2px 7px; border-radius:999px;
@@ -298,7 +298,7 @@ td.mono .clip-name{max-width:72px;}
 .badge.flip{background:var(--bad); color:#fff;}
 .badge.na{background:var(--track); color:var(--ink-faint);}
 
-.margin-cell{width:105px;}
+.margin-cell{width:78px;}
 .margin-track{
   position:relative;
   height:26px;
@@ -441,6 +441,7 @@ tr.total-row .old-val{font-weight:500;}
             <th class="sortable net-col" data-col="products" id="thProducts"><span class="th-label">Продукт</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="rev" title="Выручка, k$"><span class="th-label">Выручка</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="mt" title="Затраты на МТ, k$"><span class="th-label">МТ</span><span class="sort-ind"></span></th>
+            <th class="num sortable net-col" data-col="ngr" title="NGR — расчётная база: |Затраты на МТ при NGR=8%| / 8%. Не зависит от текущего значения kk"><span class="th-label">NGR</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="va" title="Переменные затраты, k$"><span class="th-label">Перем.</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="gp" title="Gross Profit = Выручка − МТ − Переменные, k$"><span class="th-label">GP</span><span class="sort-ind"></span></th>
             <th class="num sortable" data-col="marginGP" title="Margin GP = Gross Profit / Выручка"><span class="th-label">Margin GP</span><span class="sort-ind"></span></th>
@@ -475,7 +476,7 @@ tr.total-row .old-val{font-weight:500;}
     <br><br>
     В селекторе месяца «Среднее за месяц» делит сумму за весь период на число месяцев в модели (сейчас 5), а не на число месяцев, где у разреза была активность.
     <br><br>
-    На вкладке «По покерным сетям» строка — это пара «сеть + продукт», не только сеть: если у сети есть проводки по нескольким продуктам, она встретится в таблице несколько раз, по одной строке на каждый продукт (без суммирования). Юнит aI&amp;data hub/brain убран из списка — это внутренний cost-center, а не поле «сеть». Кнопка «Ноль прибыли aI&amp;data hub» ставит параметр kk в точку, где прибыль этого юнита равна нулю (при текущих данных — около 3,4%); от неё же считаются два дополнительных столбца в конце таблицы — гипотетическая прибыль строки, если бы «Затраты на МТ» были равны 0, и если бы они считались по этому нулевому для aI&amp;data hub значению kk (остальные статьи при этом берутся как сейчас, без изменений). Фильтр «Продукт» — множественный (чекбоксы), а «Показать только топ» ограничивает список N строками с наибольшей выручкой или прибылью (после остальных фильтров, до сортировки по клику на столбец).
+    На вкладке «По покерным сетям» строка — это пара «сеть + продукт», не только сеть: если у сети есть проводки по нескольким продуктам, она встретится в таблице несколько раз, по одной строке на каждый продукт (без суммирования). Юнит aI&amp;data hub/brain убран из списка — это внутренний cost-center, а не поле «сеть». Кнопка «Ноль прибыли aI&amp;data hub» ставит параметр kk в точку, где прибыль этого юнита равна нулю (при текущих данных — около 3,4%); от неё же считаются два дополнительных столбца в конце таблицы — гипотетическая прибыль строки, если бы «Затраты на МТ» были равны 0, и если бы они считались по этому нулевому для aI&amp;data hub значению kk (остальные статьи при этом берутся как сейчас, без изменений). Фильтр «Продукт» — множественный (чекбоксы), а «Показать только топ» ограничивает список N строками с наибольшей выручкой или прибылью (после остальных фильтров, до сортировки по клику на столбец). Столбец <strong>NGR</strong> — это расчётная база строки: |Затраты на МТ при базовом NGR 8%| / 8% (не зависит от текущего значения kk выше, только от месяца/фильтров) — именно от неё формула <code>J/0.08*kk</code> считает фактические затраты на МТ при любом kk.
   </div>
 
 </div>
@@ -599,6 +600,7 @@ function buildRows(){
         const agg = monthsAgg(net.products[pname], state.month);
         const row = makeRow(net.name, agg, threshFrac, includeFixed);
         row.product = pname;
+        row.ngr = Math.abs(row.old.mt) / MODEL.baseline_kk;
         row.mt0Profit = computeRow(agg, 0, includeFixed).profit;
         row.mtBeProfit = BREAKEVEN_KK !== null ? computeRow(agg, BREAKEVEN_KK, includeFixed).profit : null;
         rows.push(row);
@@ -614,6 +616,7 @@ function buildRows(){
 function getSortValue(r, col){
   if (col === 'name') return r.name;
   if (col === 'products') return r.product || '';
+  if (col === 'ngr') return r.ngr;
   if (col === 'mt0Profit') return r.mt0Profit;
   if (col === 'mtBeProfit') return r.mtBeProfit === null ? -Infinity : r.mtBeProfit;
   if (col === 'margin' || col === 'marginGP') return r.new[col] === null ? -Infinity : r.new[col];
@@ -680,8 +683,9 @@ function computeTotalsRow(rows, dim){
   const marginOld = Math.abs(revOld)>0.05 ? profitOld/revOld : null;
   const marginGP = Math.abs(rev)>0.05 ? gp/rev : null;
   const marginGPOld = Math.abs(revOld)>0.05 ? gpOld/revOld : null;
-  const out = {rev,mt,va,ot,gp,profit,margin,marginGP,revOld,mtOld,profitOld,gpOld,marginOld,marginGPOld, mt0Profit:null, mtBeProfit:null};
+  const out = {rev,mt,va,ot,gp,profit,margin,marginGP,revOld,mtOld,profitOld,gpOld,marginOld,marginGPOld, ngr:null, mt0Profit:null, mtBeProfit:null};
   if (dim === 'network'){
+    out.ngr = rows.reduce((s,r)=>s+(r.ngr||0),0);
     out.mt0Profit = rows.reduce((s,r)=>s+(r.mt0Profit||0),0);
     out.mtBeProfit = rows.some(r=>r.mtBeProfit===null) ? null : rows.reduce((s,r)=>s+(r.mtBeProfit||0),0);
   }
@@ -697,6 +701,7 @@ function renderTotalsRow(rows, dim, fixedExcluded, threshFrac){
   if (dim === 'network') cells.push(`<td></td>`);
   cells.push(`<td class="num mono">${fmtMoney(t.rev)}<div class="old-val tabular">${fmtMoney(t.revOld)}</div></td>`);
   cells.push(`<td class="num mono">${fmtMoney(t.mt)}<div class="old-val tabular">${fmtMoney(t.mtOld)}</div></td>`);
+  if (dim === 'network') cells.push(`<td class="num mono">${fmtMoney(t.ngr)}</td>`);
   cells.push(`<td class="num mono">${fmtMoney(t.va)}</td>`);
   cells.push(`<td class="num mono">${fmtMoney(t.gp)}<div class="old-val tabular">${fmtMoney(t.gpOld)}</div></td>`);
   cells.push(`<td class="num mono">${fmtPctClip(t.marginGP)}<div class="old-val tabular">${fmtPctClip(t.marginGPOld)}</div></td>`);
@@ -790,6 +795,7 @@ function render(){
       if (dim === 'network') cells.push(`<td class="mono"><span class="clip-name" title="${escapeHtml(r.product)}">${escapeHtml(r.product)}</span></td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.rev)}<div class="old-val tabular">${fmtMoney(r.old.rev)}</div></td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.mt)}<div class="old-val tabular">${fmtMoney(r.old.mt)}</div></td>`);
+      if (dim === 'network') cells.push(`<td class="num mono">${fmtMoney(r.ngr)}</td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.va)}</td>`);
       cells.push(`<td class="num mono">${fmtMoney(r.new.gp)}<div class="old-val tabular">${fmtMoney(r.old.gp)}</div></td>`);
       cells.push(`<td class="num mono">${fmtPctClip(r.new.marginGP)}<div class="old-val tabular">${fmtPctClip(r.old.marginGP)}</div></td>`);
@@ -801,10 +807,8 @@ function render(){
             <div class="margin-bar old" style="left:${oldStyle.left}; width:${oldStyle.width}"></div>
             <div class="margin-bar new ${newGoodClass}" style="left:${newStyle.left}; width:${newStyle.width}"></div>
           </div>
-          <div style="display:flex;justify-content:space-between;font-size:.68rem;margin-top:2px" class="tabular mono">
-            <span class="old-val">${fmtPctClip(r.old.margin)}</span>
-            <span style="font-weight:700;color:var(--${newGoodClass==='good'?'good':'bad'})">${fmtPctClip(r.new.margin)}</span>
-          </div>
+          <div class="old-val tabular mono" style="text-align:right;margin-top:2px;">${fmtPctClip(r.old.margin)}</div>
+          <div class="tabular mono" style="text-align:right;font-weight:700;color:var(--${newGoodClass==='good'?'good':'bad'})">${fmtPctClip(r.new.margin)}</div>
         </td>`);
       cells.push(`<td>${badge}</td>`);
       if (dim === 'network'){
