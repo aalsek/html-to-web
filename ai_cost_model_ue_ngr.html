@@ -188,17 +188,19 @@ select:focus-visible{outline:2px solid var(--accent);}
 .tab:focus-visible{outline:2px solid var(--accent);}
 
 .subbar{
-  display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;
+  display:flex; flex-direction:column; gap:14px;
   padding:14px 16px;
   background:var(--accent-soft);
   border:1px solid var(--border);
   border-radius:12px;
   margin-bottom:14px;
 }
+.subbar-row{display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;}
+.subbar-row + .subbar-row{padding-top:14px; border-top:1px solid var(--border);}
 .subbar .field{gap:4px;}
 .subbar label{font-size:.78rem; color:var(--ink-muted); font-weight:600;}
 
-.product-checks{display:flex; flex-wrap:wrap; gap:6px; max-width:520px;}
+.product-checks{display:flex; flex-wrap:wrap; gap:6px;}
 .chip-check{
   display:inline-flex; align-items:center; gap:5px;
   font-size:.78rem; font-weight:500; color:var(--ink);
@@ -392,29 +394,33 @@ tr.total-row .old-val{font-weight:500;}
   </div>
 
   <div class="subbar" id="productFilterRow" hidden>
-    <div class="field">
-      <label>Продукт (для разреза по сетям)</label>
-      <div class="product-checks" id="productChecks">
-        <label class="chip-check master"><input type="checkbox" id="productAll" checked> Все</label>
+    <div class="subbar-row">
+      <div class="field" style="flex:1 1 100%;">
+        <label>Продукт (для разреза по сетям)</label>
+        <div class="product-checks" id="productChecks">
+          <label class="chip-check master"><input type="checkbox" id="productAll" checked> Все</label>
+        </div>
       </div>
     </div>
 
-    <div class="field check-field">
-      <label><input type="checkbox" id="excludeFixed"> Исключить постоянные затраты (Прочие) из прибыли</label>
-    </div>
+    <div class="subbar-row">
+      <div class="field check-field">
+        <label><input type="checkbox" id="excludeFixed"> Исключить постоянные затраты (Прочие) из прибыли</label>
+      </div>
 
-    <div class="field check-field">
-      <label><input type="checkbox" id="topNEnabled"> Показать только топ</label>
-    </div>
-    <div class="field" style="flex:0 0 80px;">
-      <label for="topNCount">Кол-во сетей</label>
-      <input type="number" id="topNCount" class="kk-num tabular" min="3" max="10" step="1" value="5" style="width:5ch;">
-    </div>
-    <div class="field">
-      <label>по метрике</label>
-      <div class="radio-row">
-        <label><input type="radio" name="topNMetric" value="rev" checked> Выручка</label>
-        <label><input type="radio" name="topNMetric" value="profit"> Прибыль</label>
+      <div class="field check-field">
+        <label><input type="checkbox" id="topNEnabled"> Показать только топ</label>
+      </div>
+      <div class="field" style="flex:0 0 90px;">
+        <label for="topNCount">Кол-во сетей</label>
+        <input type="number" id="topNCount" class="kk-num tabular" min="3" max="10" step="1" value="5" style="width:5ch;">
+      </div>
+      <div class="field">
+        <label>по метрике</label>
+        <div class="radio-row">
+          <label><input type="radio" name="topNMetric" value="rev" checked> Выручка</label>
+          <label><input type="radio" name="topNMetric" value="profit"> Прибыль</label>
+        </div>
       </div>
     </div>
   </div>
