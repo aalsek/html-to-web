@@ -604,6 +604,14 @@ function escapeHtml(s){
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+const NETWORK_DISPLAY_NAME = {
+  '-': '— (внутренний юнит aI&data hub / brain)',
+};
+function displayName(name, dim){
+  if (dim === 'network' && NETWORK_DISPLAY_NAME[name]) return NETWORK_DISPLAY_NAME[name];
+  return name;
+}
+
 function render(){
   const dim = state.dim;
   const threshFrac = state.thresh/100;
@@ -667,7 +675,7 @@ function render(){
       else if (r.status==='na') badge = '<span class="badge na">нет выручки</span>';
       else badge = '<span class="badge good">эффективно</span>';
       return `<tr>
-        <td class="seg-name">${escapeHtml(r.name)}</td>
+        <td class="seg-name">${escapeHtml(displayName(r.name, dim))}</td>
         <td class="num mono">${fmtMoney(r.new.rev)}<div class="old-val tabular">${fmtMoney(r.old.rev)}</div></td>
         <td class="num mono">${fmtMoney(r.new.mt)}<div class="old-val tabular">${fmtMoney(r.old.mt)}</div></td>
         <td class="num mono">${fmtMoney(r.new.va)}</td>
